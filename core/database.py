@@ -9,7 +9,7 @@ class Database:
             host="localhost",
             user="root",
             password="1234",
-            database="Cenicos&CinicosDB"
+            database="db_cenicosecinicos"
         )
         self.cursor = self.conn.cursor(dictionary=True)
 
@@ -24,3 +24,7 @@ class Database:
     def fechar(self):
         self.cursor.close()
         self.conn.close()
+
+
+# Instância global do banco de dados
+database = Database()
