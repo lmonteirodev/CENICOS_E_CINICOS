@@ -1,9 +1,12 @@
+# IMPORTS----------------------------------------------------------------------------------------------------------
 import mysql.connector
-from PyQt5 import uic, QtWidgets
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget
+from PyQt5 import uic
 from reportlab.pdfgen import canvas
 import sys
 import os
 
+# DATABASE---------------------------------------------------------------------------------------------------------
 conexao = mysql.connector.connect(
     host='Localhost',
     user='root',
@@ -13,7 +16,7 @@ conexao = mysql.connector.connect(
 cursor = conexao.cursor()
 
 def get_connection():
-    """Abre uma conexão usando PyMySQL."""
+    """Abre uma conexão usando MySQL."""
     try:
         conn = mysql.connector.connect(**conexao)
         return conn
@@ -21,27 +24,65 @@ def get_connection():
         print(f"[ERRO CONEXÃO] {e}")
         return None
 
+# OBJETOS-------------------------------------------------------------------------------------------------------------
+class DashScreen(QMainWindow):
+    '''Abre a tela Dashboard do programa'''
+    def __init__(self):
+        super().__init__()
+        uic.loadUi(os.path.join("telas", "aba_dashboard.ui"), self)
+
+        self.btn_abrir_agenda_3.clicked.connect(self.abrir_agenda)
+        self.btn_abrir_agenda_menu.clicked.connect(self.abrir_agenda)
+        self.btn_abrir_cliente_menu.clicked.connect(self.abrir_cliente)
+        self.btn_abrir_funcionario_menu.clicked.connect(self.abrir_funcionarios)
+        self.btn_abrir_documento_menu.clicked.connect(self.abrir_doc)
+
+    def abrir_cliente (self):
+        self.clientes = ClientesScreen()
+        self.clientes.show()
+
+    def abrir_agenda (self):
+        self.agenda = AgendaScreen()
+        self.agenda.show()
+
+    def abrir_funcionarios (self):
+        self.funcionarios = FruncScreen()
+        self.funcionarios.show()
+
+    def abrir_doc (self):
+        self.doc = DocScreen()
+        self.doc.show()
+
+
+class AgendaScreen(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        uic.loadUi(os.path.join("telas", "aba_agenda.ui"), self)
+
+class ClientesScreen(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        uic.loadUi(os.path.join("telas", "aba_clientes.ui"), self)
+
+class FruncScreen(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        uic.loadUi(os.path.join("telas", "aba_funcionarios.ui"), self)
+
+class DocScreen (QMainWindow):
+    def __init__(self):
+        super().__init__()
+        uic.loadUi(os.path.join("telas", "aba_documentos.ui"), self)
+
+
+
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
+    app = QApplication(sys.argv)
 
     # Carrega UIs da pasta 'telas'
-    clientes = uic.loadUi(os.path.join("abas", "aba_clientes.ui"))
-    # telaListar = uic.loadUi(os.path.join("telas", "listar_dados.ui"))
-    # tela_editar = uic.loadUi(os.path.join("telas", "menu_editar.ui"))
+    dash = DashScreen()
 
-    # # Conexões de açoes dos botões
-    # cadprod.pushButton.clicked.connect(funcao_cadastrar)        # Botão salvar/cadastrar
-    # cadprod.pushButton_2.clicked.connect(abrir_tela_listar)     # Botão abrir/listar
-
-    # #Botão gerar PDF na tela de listagem
-    # telaListar.pushButton.clicked.connect(gerar_pdf) 
-    
-    # telaListar.botaoEditar.clicked.connect(editar_dados)        # Editar (abrir editor)
-    # telaListar.botaoExcluir.clicked.connect(excluir_dados)      # Excluir
-    # tela_editar.pushButton.clicked.connect(salvar_valor_editado)# Salvar alterações
-        
-    # mostra a janela principal
-    clientes.show()
+    dash.show()
     # inicia o loop de eventos da aplicação
     sys.exit(app.exec())
