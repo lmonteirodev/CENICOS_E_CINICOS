@@ -1,7 +1,6 @@
-# Módulo de Database
-# Responsável pela conexão e operações com banco de dados
 import mysql.connector
         
+
 conexao = mysql.connector.connect(
     host='Localhost',
     user='root',
@@ -9,6 +8,16 @@ conexao = mysql.connector.connect(
     database='db_cenicosecinicos',
 )
 cursor = conexao.cursor()
+
+def get_connection():
+    """Abre uma conexão usando PyMySQL."""
+    try:
+        conn = mysql.connector.connect(**conexao)
+        return conn
+    except Exception as e:
+        print(f"[ERRO CONEXÃO] {e}")
+        return None
+
 
 # # ------------------------------------------------ CRUD ---------------------------------------------------------
 # # ----------------- CREAT
@@ -33,5 +42,3 @@ cursor = conexao.cursor()
 # conexao.commit()
 
 
-# cursor.close()
-# conexao.close()
