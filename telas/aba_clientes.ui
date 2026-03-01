@@ -773,7 +773,7 @@ hover-color {
       </size>
      </property>
     </widget>
-    <widget class="QPushButton" name="relatorios_button">
+    <widget class="QPushButton" name="documentos_button">
      <property name="geometry">
       <rect>
        <x>20</x>

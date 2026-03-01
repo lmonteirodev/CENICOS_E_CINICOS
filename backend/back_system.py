@@ -40,42 +40,143 @@ class DashScreen(QMainWindow):
     def abrir_cliente (self):
         self.clientes = ClientesScreen()
         self.clientes.show()
+        self.hide()
 
     def abrir_agenda (self):
         self.agenda = AgendaScreen()
         self.agenda.show()
+        self.hide()
 
     def abrir_funcionarios (self):
-        self.funcionarios = FruncScreen()
+        self.funcionarios = FuncScreen()
         self.funcionarios.show()
+        self.hide()
 
     def abrir_doc (self):
         self.doc = DocScreen()
         self.doc.show()
-
+        self.hide()
 
 class AgendaScreen(QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi(os.path.join("telas", "aba_agenda.ui"), self)
 
+        self.dashboard_button.clicked.connect(self.abrir_dash)
+        self.clientes_button.clicked.connect(self.abrir_cliente)
+        self.funcionarios_button.clicked.connect(self.abrir_funcionarios)
+        self.documentos_button.clicked.connect(self.abrir_doc)
+
+
+    def abrir_dash (self):
+        self.dash = DashScreen()
+        self.dash.show()
+        self.close()
+
+    def abrir_cliente (self):
+        self.clientes = ClientesScreen()
+        self.clientes.show()
+        self.close()
+
+    def abrir_funcionarios (self):
+        self.funcionarios = FuncScreen()
+        self.funcionarios.show()
+        self.close()
+
+    def abrir_doc (self):
+        self.doc = DocScreen()
+        self.doc.show()
+        self.close()
+
 class ClientesScreen(QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi(os.path.join("telas", "aba_clientes.ui"), self)
+    
+        self.agenda_button.clicked.connect(self.abrir_agenda)
+        self.dashboard_button.clicked.connect(self.abrir_dash)
+        self.funcionarios_button.clicked.connect(self.abrir_funcionarios)
+        self.documentos_button.clicked.connect(self.abrir_doc)
 
-class FruncScreen(QMainWindow):
+    def abrir_dash (self):
+        self.dash = DashScreen()
+        self.dash.show()
+        self.close()
+
+    def abrir_agenda (self):
+        self.agenda = AgendaScreen()
+        self.agenda.show()
+        self.close()
+
+    def abrir_funcionarios (self):
+        self.funcionarios = FuncScreen()
+        self.funcionarios.show()
+        self.close()
+
+    def abrir_doc (self):
+        self.doc = DocScreen()
+        self.doc.show()
+        self.close()
+
+class FuncScreen(QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi(os.path.join("telas", "aba_funcionarios.ui"), self)
+        
+        self.btn_abrir_dashboard_menu.clicked.connect(self.abrir_dash)
+        self.btn_abrir_agenda_menu.clicked.connect(self.abrir_agenda)
+        self.btn_abrir_cliente_menu.clicked.connect(self.abrir_cliente)
+        self.btn_abrir_documento_menu.clicked.connect(self.abrir_doc)
+
+    def abrir_dash (self):
+        self.dash = DashScreen()
+        self.dash.show()
+        self.close()
+
+    def abrir_cliente (self):
+        self.clientes = ClientesScreen()
+        self.clientes.show()
+        self.close()
+
+    def abrir_agenda (self):
+        self.agenda = AgendaScreen()
+        self.agenda.show()
+        self.close()
+
+    def abrir_doc (self):
+        self.doc = DocScreen()
+        self.doc.show()
+        self.close()
 
 class DocScreen (QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi(os.path.join("telas", "aba_documentos.ui"), self)
+        
+        self.dashboard_button.clicked.connect(self.abrir_dash)
+        self.clientes_button.clicked.connect(self.abrir_cliente)
+        self.funcionarios_button.clicked.connect(self.abrir_funcionarios)
+        self.agenda_button.clicked.connect(self.abrir_agenda)
 
+    def abrir_dash (self):
+        self.dash = DashScreen()
+        self.dash.show()
+        self.close()
 
+    def abrir_cliente (self):
+        self.clientes = ClientesScreen()
+        self.clientes.show()
+        self.close()
 
+    def abrir_agenda (self):
+        self.agenda = AgendaScreen()
+        self.agenda.show()
+        self.close()
+
+    def abrir_funcionarios (self):
+        self.funcionarios = FuncScreen()
+        self.funcionarios.show()
+        self.close()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
