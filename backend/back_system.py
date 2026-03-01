@@ -1,6 +1,6 @@
 # IMPORTS----------------------------------------------------------------------------------------------------------
 # from core.database import get_connection
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5 import uic
 from reportlab.pdfgen import canvas
 import sys
@@ -40,6 +40,8 @@ class DashScreen(BaseScreen):
 
         # main_dashboard_frame
         self.btn_abrir_agenda_3.clicked.connect(lambda: self.controller.show_screen(AgendaScreen))
+        self.btn_abrir_novo_cliente_2.clicked.connect(lambda: self.controller.show_screen(ClientesCadScreen))
+        
         # frames menores
         self.btn_abrir_clientes.clicked.connect(lambda: self.controller.show_screen(ClientesScreen))
         self.btn_abrir_agenda.clicked.connect(lambda: self.controller.show_screen(AgendaScreen))
@@ -51,6 +53,7 @@ class AgendaScreen(BaseScreen):
         super().__init__("telas/aba_agenda.ui")
         self.controller = controller
 
+        # menu_lateral
         self.dashboard_button.clicked.connect(lambda: self.controller.show_screen(DashScreen))
         self.clientes_button.clicked.connect(lambda: self.controller.show_screen(ClientesScreen))
         self.funcionarios_button.clicked.connect(lambda: self.controller.show_screen(FuncScreen))
@@ -61,26 +64,65 @@ class ClientesScreen(BaseScreen):
         super().__init__("telas/aba_clientes.ui")
         self.controller = controller
     
+        # menu_lateral
         self.agenda_button.clicked.connect(lambda: self.controller.show_screen(AgendaScreen))
         self.dashboard_button.clicked.connect(lambda: self.controller.show_screen(DashScreen))
         self.funcionarios_button.clicked.connect(lambda: self.controller.show_screen(FuncScreen))
         self.documentos_button.clicked.connect(lambda: self.controller.show_screen(DocScreen))
+
+        # frame superior
+        self.pushButton.clicked.connect(lambda: self.controller.show_screen(ClientesCadScreen))
+
+class ClientesCadScreen(BaseScreen):
+    def __init__(self, controller):
+        super().__init__("telas/aba_clientes_cad.ui")
+        self.controller = controller
+
+        # menu_lateral
+        self.clientes_button.clicked.connect(lambda: self.controller.show_screen(ClientesScreen))
+        self.agenda_button.clicked.connect(lambda: self.controller.show_screen(AgendaScreen))
+        self.dashboard_button.clicked.connect(lambda: self.controller.show_screen(DashScreen))
+        self.funcionarios_button.clicked.connect(lambda: self.controller.show_screen(FuncScreen))
+        self.documentos_button.clicked.connect(lambda: self.controller.show_screen(DocScreen))
+
+        # frame superior
+        self.pushButton_2.clicked.connect(lambda: self.controller.show_screen(ClientesScreen))
 
 class FuncScreen(BaseScreen):
     def __init__(self, controller):
         super().__init__("telas/aba_funcionarios.ui")
         self.controller = controller
         
+        # menu_lateral
         self.btn_abrir_dashboard_menu.clicked.connect(lambda: self.controller.show_screen(DashScreen))
         self.btn_abrir_agenda_menu.clicked.connect(lambda: self.controller.show_screen(AgendaScreen))
         self.btn_abrir_cliente_menu.clicked.connect(lambda: self.controller.show_screen(ClientesScreen))
         self.btn_abrir_documento_menu.clicked.connect(lambda: self.controller.show_screen(DocScreen))
+
+        # frame superior
+        self.pushButton.clicked.connect(lambda: self.controller.show_screen(FuncCadScreen))
+
+class FuncCadScreen(BaseScreen):
+    def __init__(self, controller):
+        super().__init__("telas/aba_funcionarios_cad.ui")
+        self.controller = controller
+
+        # menu_lateral
+        self.btn_abrir_dashboard_menu.clicked.connect(lambda: self.controller.show_screen(DashScreen))
+        self.btn_abrir_agenda_menu.clicked.connect(lambda: self.controller.show_screen(AgendaScreen))
+        self.btn_abrir_cliente_menu.clicked.connect(lambda: self.controller.show_screen(ClientesScreen))
+        self.btn_abrir_funcionario_menu.clicked.connect(lambda: self.controller.show_screen(FuncScreen))
+        self.btn_abrir_documento_menu.clicked.connect(lambda: self.controller.show_screen(DocScreen))
+
+        # frame superior
+        self.pushButton_2.clicked.connect(lambda: self.controller.show_screen(FuncScreen))
 
 class DocScreen (BaseScreen):
     def __init__(self, controller):
         super().__init__("telas/aba_documentos.ui")
         self.controller = controller
 
+        # menu_lateral
         self.dashboard_button.clicked.connect(lambda: self.controller.show_screen(DashScreen))
         self.clientes_button.clicked.connect(lambda: self.controller.show_screen(ClientesScreen))
         self.funcionarios_button.clicked.connect(lambda: self.controller.show_screen(FuncScreen))
