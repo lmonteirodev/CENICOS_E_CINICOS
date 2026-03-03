@@ -1,22 +1,19 @@
 import mysql.connector
         
 
-conexao = mysql.connector.connect(
-    host='localhost',
-    user='root',
-    password='1234',
-    database='db_cenicosecinicos',
-)
-cursor = conexao.cursor()
-
 def get_connection():
-    """Abre uma conexão usando PyMySQL."""
     try:
-        conn = mysql.connector.connect(**conexao)
-        return conn
+        conexao = mysql.connector.connect(
+            host="localhost",       # ou IP do servidor
+            user="root",
+            password="0709",
+            database="db_cenicosecinicos"
+        )
+        return conexao
     except Exception as e:
-        print(f"[ERRO CONEXÃO] {e}")
+        print("Erro ao conectar:", e)
         return None
+
 
 
 # # ------------------------------------------------ CRUD ---------------------------------------------------------

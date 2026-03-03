@@ -90,14 +90,14 @@ class ClientesCadScreen(BaseScreen):
         self.pushButton_2.clicked.connect(lambda: self.controller.show_screen(ClientesScreen))
         
         # Botão de cadastro
-        self.pushButton_3.clicked.connect(ClientesCadScreen.cadastrar_cliente)
+        self.pushButton_3.clicked.connect(self.cadastrar_cliente)
         self.pushButton_4.clicked.connect(lambda: self.controller.show_screen(ClientesScreen))
 
-    def cadastrar_cliente ():
+    def cadastrar_cliente (self):
         try:
             conexao = get_connection()
             if not conexao:
-                QtWidgets.QMessageBox.critical(None, "Erro", "Sem conexão com banco de dados.")
+                QtWidgets.QMessageBox.critical(self, "Erro", "Sem conexão com banco de dados.")
                 return
             
             def definir_tipo_pessoa (cpf_cnpj: str):
@@ -108,40 +108,47 @@ class ClientesCadScreen(BaseScreen):
                     return 'J' 
                 else: raise ValueError("CPF/CNPJ inválido")
 
-            nome = ClientesCadScreen.lineEdit_1.text().strip()
-            cpf_cnpj = ClientesCadScreen.lineEdit_2.text().strip()
-            telefone = ClientesCadScreen.lineEdit_3.text().strip()
-            email = ClientesCadScreen.lineEdite_4.text().strip()
+            nome = self.lineEdit_1.text().strip()
+            cpf_cnpj = self.lineEdit_2.text().strip()
+            telefone = self.lineEdit_3.text().strip()
+            email = self.lineEdit_4.text().strip()
 
             if not (nome and cpf_cnpj and telefone and email):
-                QtWidgets.QMessageBox.warning(ClientesCadScreen, "Aviso", "Preencha todos os campos.")
+                QtWidgets.QMessageBox.warning(self, "Aviso", "Preencha todos os campos.")
                 conexao.close()
                 return
             
             tipo_pessoa = definir_tipo_pessoa(cpf_cnpj)
         
             cursor = conexao.cursor()
-            
+
+            # 1. Inserir cliente
             sql_cliente = """INSERT INTO cliente (nome, cpf_cnpj, tipo_pessoa) VALUES (%s, %s, %s)"""
             valores_cliente = (nome, cpf_cnpj, tipo_pessoa)
             cursor.execute(sql_cliente, valores_cliente)
-            
-            sql_telefone = """INSERT INTO telefone_cliente (telefone) VALUES (%s)"""
-            valores_telefone = (telefone,)
+
+            # 2. Obter o ID do cliente inserido
+            ID_cliente = cursor.lastrowid
+
+            # 3. Inserir telefone vinculado ao cliente
+            sql_telefone = """INSERT INTO telefone_cliente (telefone, iD_cliente) VALUES (%s, %s)"""
+            valores_telefone = (telefone, ID_cliente)
             cursor.execute(sql_telefone, valores_telefone)
-            
-            sql_email = """INSERT INTO email_cliente (email) VALUES (%s)"""
-            valores_email = (email,)
+
+            # 4. Inserir email vinculado ao cliente
+            sql_email = """INSERT INTO email_cliente (email, id_cliente) VALUES (%s, %s)"""
+            valores_email = (email, ID_cliente)
             cursor.execute(sql_email, valores_email)
-            
+
+            # Finalizar
             conexao.commit()
             cursor.close()
             conexao.close()
 
-            QtWidgets.QMessageBox.information(ClientesCadScreen, "Sucesso", "Cliente cadastrado com sucesso!")
+            QtWidgets.QMessageBox.information(self, "Sucesso", "Cliente cadastrado com sucesso!")
 
         except Exception as e:
-            QtWidgets.QMessageBox.critical(None, "Erro", f"Ocorreu um erro: {str(e)}")
+            QtWidgets.QMessageBox.critical(self, "Erro", f"Ocorreu um erro: {str(e)}")
 
 
 class FuncScreen(BaseScreen):
