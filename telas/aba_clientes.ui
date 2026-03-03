@@ -594,7 +594,9 @@ border: 1px;
 box-shadow: 5px 5px 5px;
 border-color:  rgb(149, 149, 149);</string>
     </property>
-    <widget class="QPushButton" name="dashboard_button">
+border: 1px;
+    
+     <widget class="QPushButton" name="btn_abrir_dashboard_menu">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -641,7 +643,7 @@ hover-color {
       </size>
      </property>
     </widget>
-    <widget class="QPushButton" name="clientes_button">
+     <widget class="QPushButton" name="btn_abrir_cliente_menu">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -685,7 +687,7 @@ hover-color {
       </size>
      </property>
     </widget>
-    <widget class="QPushButton" name="funcionarios_button">
+     <widget class="QPushButton" name="btn_abrir_funcionario_menu">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -729,7 +731,7 @@ hover-color {
       </size>
      </property>
     </widget>
-    <widget class="QPushButton" name="agenda_button">
+     <widget class="QPushButton" name="btn_abrir_agenda_menu">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -773,7 +775,7 @@ hover-color {
       </size>
      </property>
     </widget>
-    <widget class="QPushButton" name="documentos_button">
+     <widget class="QPushButton" name="btn_abrir_documento_menu">
      <property name="geometry">
       <rect>
        <x>20</x>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>Form</class>
+<widget class="QWidget" name="Form">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -29,7 +29,7 @@ border: 1px;
 box-shadow: 5px 5px 5px;
 border-color:  rgb(149, 149, 149);</string>
     </property>
-    <widget class="QPushButton" name="dashboard_button">
+      <widget class="QPushButton" name="btn_abrir_dashboard_menu">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -76,7 +76,7 @@ hover-color {
       </size>
      </property>
     </widget>
-    <widget class="QPushButton" name="clientes_button">
+      <widget class="QPushButton" name="btn_abrir_cliente_menu">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -120,7 +120,7 @@ hover-color {
       </size>
      </property>
     </widget>
-    <widget class="QPushButton" name="funcionarios_button">
+      <widget class="QPushButton" name="btn_abrir_funcionario_menu">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -164,7 +164,7 @@ hover-color {
       </size>
      </property>
     </widget>
-    <widget class="QPushButton" name="agenda_button">
+      <widget class="QPushButton" name="btn_abrir_agenda_menu">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -208,7 +208,7 @@ hover-color {
       </size>
      </property>
     </widget>
-    <widget class="QPushButton" name="documentos_button">
+      <widget class="QPushButton" name="btn_abrir_documento_menu">
      <property name="geometry">
       <rect>
        <x>20</x>

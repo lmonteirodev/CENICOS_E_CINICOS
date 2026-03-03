@@ -55,10 +55,10 @@ class AgendaScreen(BaseScreen):
         self.controller = controller
 
         # menu_lateral
-        self.dashboard_button.clicked.connect(lambda: self.controller.show_screen(DashScreen))
-        self.clientes_button.clicked.connect(lambda: self.controller.show_screen(ClientesScreen))
-        self.funcionarios_button.clicked.connect(lambda: self.controller.show_screen(FuncScreen))
-        self.documentos_button.clicked.connect(lambda: self.controller.show_screen(DocScreen))
+        self.btn_abrir_dashboard_menu.clicked.connect(lambda: self.controller.show_screen(DashScreen))
+        self.btn_abrir_cliente_menu.clicked.connect(lambda: self.controller.show_screen(ClientesScreen))
+        self.btn_abrir_funcionario_menu.clicked.connect(lambda: self.controller.show_screen(FuncScreen))
+        self.btn_abrir_documento_menu.clicked.connect(lambda: self.controller.show_screen(DocScreen))
 
 class ClientesScreen(BaseScreen):
     def __init__(self, controller):
@@ -66,10 +66,10 @@ class ClientesScreen(BaseScreen):
         self.controller = controller
     
         # menu_lateral
-        self.agenda_button.clicked.connect(lambda: self.controller.show_screen(AgendaScreen))
-        self.dashboard_button.clicked.connect(lambda: self.controller.show_screen(DashScreen))
-        self.funcionarios_button.clicked.connect(lambda: self.controller.show_screen(FuncScreen))
-        self.documentos_button.clicked.connect(lambda: self.controller.show_screen(DocScreen))
+        self.btn_abrir_agenda_menu.clicked.connect(lambda: self.controller.show_screen(AgendaScreen))
+        self.btn_abrir_dashboard_menu.clicked.connect(lambda: self.controller.show_screen(DashScreen))
+        self.btn_abrir_funcionario_menu.clicked.connect(lambda: self.controller.show_screen(FuncScreen))
+        self.btn_abrir_documento_menu.clicked.connect(lambda: self.controller.show_screen(DocScreen))
 
         # frame superior
         self.pushButton.clicked.connect(lambda: self.controller.show_screen(ClientesCadScreen))
@@ -88,12 +88,16 @@ class ClientesCadScreen(BaseScreen):
 
         # frame superior
         self.pushButton_2.clicked.connect(lambda: self.controller.show_screen(ClientesScreen))
+        
+        # Botão de cadastro
+        self.pushButton_3.clicked.connect(ClientesCadScreen.cadastrar_cliente)
+        self.pushButton_4.clicked.connect(lambda: self.controller.show_screen(ClientesScreen))
 
     def cadastrar_cliente ():
         try:
             conexao = get_connection()
             if not conexao:
-                QtWidgets.QMessageBox.critical(ClientesCadScreen, "Erro", "Sem conexão com banco de dados.")
+                QtWidgets.QMessageBox.critical(None, "Erro", "Sem conexão com banco de dados.")
                 return
             
             def definir_tipo_pessoa (cpf_cnpj: str):
@@ -114,15 +118,22 @@ class ClientesCadScreen(BaseScreen):
                 conexao.close()
                 return
             
-            tipo_pessoa = definir_tipo_pessoa()
+            tipo_pessoa = definir_tipo_pessoa(cpf_cnpj)
         
             cursor = conexao.cursor()
-            sql = """INSERT INTO cliente (nome, cpf_cnpj, tipo_pessoa) VALUES (%s, %s, %s)"""
-            sql2 = """INSERT INTO telefone_cliente (telefone) VALUES (%s)"""
-            sql3 = """INSERT INTO email_cliente (email) VALUES (%s)"""
-            valores = (nome, cpf_cnpj, telefone, email, tipo_pessoa)
-
-            cursor.execute(sql, sql2, sql3, valores)
+            
+            sql_cliente = """INSERT INTO cliente (nome, cpf_cnpj, tipo_pessoa) VALUES (%s, %s, %s)"""
+            valores_cliente = (nome, cpf_cnpj, tipo_pessoa)
+            cursor.execute(sql_cliente, valores_cliente)
+            
+            sql_telefone = """INSERT INTO telefone_cliente (telefone) VALUES (%s)"""
+            valores_telefone = (telefone,)
+            cursor.execute(sql_telefone, valores_telefone)
+            
+            sql_email = """INSERT INTO email_cliente (email) VALUES (%s)"""
+            valores_email = (email,)
+            cursor.execute(sql_email, valores_email)
+            
             conexao.commit()
             cursor.close()
             conexao.close()
@@ -130,7 +141,7 @@ class ClientesCadScreen(BaseScreen):
             QtWidgets.QMessageBox.information(ClientesCadScreen, "Sucesso", "Cliente cadastrado com sucesso!")
 
         except Exception as e:
-            QtWidgets.QMessageBox.critical(ClientesCadScreen, "Erro", f"Ocorreu um erro: {str(e)}")
+            QtWidgets.QMessageBox.critical(None, "Erro", f"Ocorreu um erro: {str(e)}")
 
 
 class FuncScreen(BaseScreen):
@@ -168,10 +179,10 @@ class DocScreen (BaseScreen):
         self.controller = controller
 
         # menu_lateral
-        self.dashboard_button.clicked.connect(lambda: self.controller.show_screen(DashScreen))
-        self.clientes_button.clicked.connect(lambda: self.controller.show_screen(ClientesScreen))
-        self.funcionarios_button.clicked.connect(lambda: self.controller.show_screen(FuncScreen))
-        self.agenda_button.clicked.connect(lambda: self.controller.show_screen(AgendaScreen))
+        self.btn_abrir_dashboard_menu.clicked.connect(lambda: self.controller.show_screen(DashScreen))
+        self.btn_abrir_cliente_menu.clicked.connect(lambda: self.controller.show_screen(ClientesScreen))
+        self.btn_abrir_funcionario_menu.clicked.connect(lambda: self.controller.show_screen(FuncScreen))
+        self.btn_abrir_agenda_menu.clicked.connect(lambda: self.controller.show_screen(AgendaScreen))
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
