@@ -330,10 +330,10 @@ border-radius: 14px;</string>
      </property>
      <property name="font">
       <font>
-       <family>Georgia</family>
+       <family>Times New Roman</family>
        <pointsize>12</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
+       <weight>50</weight>
+       <bold>false</bold>
       </font>
      </property>
      <property name="layoutDirection">
@@ -341,6 +341,10 @@ border-radius: 14px;</string>
      </property>
      <property name="styleSheet">
       <string notr="true">QHeaderView::section {
+	font-family: &quot;MS Shell Dlg 2&quot;;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
     background-color: rgb(103, 43, 43);
     color: white;
     border: none;
@@ -365,7 +369,23 @@ QTableWidget {
     /* Necessário para o fundo arredondar corretamente */
     padding: 1px;
 }
-</string>
+QTableWidget::section:first {
+	font-family: &quot;Times New Roman&quot;;
+    font-size: 12px;
+	font-weight: bold;
+    color: black;
+}
+QTableWidget::section:second, third {
+	font-family: &quot;Times New Roman&quot;;
+    font-size: 10px;
+    color: rgb(152, 152, 152);
+}
+QTableWidget::section:last {
+	font-family: &quot;Times New Roman&quot;;
+    font-size: 12px;
+	font-weight: bold;
+    color: black;
+}</string>
      </property>
      <property name="editTriggers">
       <set>QAbstractItemView::NoEditTriggers</set>

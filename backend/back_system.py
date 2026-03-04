@@ -80,12 +80,17 @@ class ClientesScreen(BaseScreen):
         )
 
         header = self.tableWidget.horizontalHeader()
-        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)           # Cliente
-        header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)  # Documento
-        header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)           # Contato
-        header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)  # Status
-        header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeToContents)  # Serviços
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)  # Cliente
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Fixed)  # Documento
+        header.setSectionResizeMode(2, QtWidgets.QHeaderView.Fixed)  # Contato
+        header.setSectionResizeMode(3, QtWidgets.QHeaderView.Fixed)  # Status
+        header.setSectionResizeMode(4, QtWidgets.QHeaderView.Fixed)  # Serviços
 
+        self.tableWidget.setColumnWidth(0, 400) # Nome do Cliente
+        self.tableWidget.setColumnWidth(1, 200) # CPF/CNPJ
+        self.tableWidget.setColumnWidth(2, 300) # Contato
+        self.tableWidget.setColumnWidth(3, 100) # Status
+        self.tableWidget.setColumnWidth(4, 100) # Qtd Serviços
 
         self.carregar_clientes()
 
@@ -104,19 +109,18 @@ class ClientesScreen(BaseScreen):
         self.tableWidget.setRowCount(len(clientes))
 
         for i, (nome, documento, telefone, email) in enumerate(clientes):
-            contato = f"{email}, {telefone}" if email and telefone else (email or telefone or "N/A")
+            contato = f"{email}\n{telefone}" if email and telefone else (email or telefone or "N/A")
 
             self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(nome))
             self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(documento))
             self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(contato))
             self.tableWidget.setItem(i, 3, QtWidgets.QTableWidgetItem("ATIVO"))  # ou N/A se não tiver status
             self.tableWidget.setItem(i, 4, QtWidgets.QTableWidgetItem("0"))      # número de serviços
+            self.tableWidget.setRowHeight(i, 60)
 
         cursor.close()
         conexao.close()
 
-
-        
 
 class ClientesCadScreen(BaseScreen):
     def __init__(self, controller):
@@ -199,7 +203,6 @@ class ClientesCadScreen(BaseScreen):
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Erro", f"Ocorreu um erro: {str(e)}")
 
-
 class FuncScreen(BaseScreen):
     def __init__(self, controller):
         super().__init__("telas/aba_funcionarios.ui")
@@ -214,6 +217,51 @@ class FuncScreen(BaseScreen):
         # frame superior
         self.pushButton.clicked.connect(lambda: self.controller.show_screen(FuncCadScreen))
 
+        self.tableWidget.setColumnCount(5)
+        self.tableWidget.setHorizontalHeaderLabels(
+            ["Nome", "Documento", "Contato", "Status", "Cargo"]
+        )
+
+        header = self.tableWidget.horizontalHeader()
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)  # Nome
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Fixed)  # Documento
+        header.setSectionResizeMode(2, QtWidgets.QHeaderView.Fixed)  # Contato
+        header.setSectionResizeMode(3, QtWidgets.QHeaderView.Fixed)  # Status
+        header.setSectionResizeMode(4, QtWidgets.QHeaderView.Fixed)  # Cargo
+
+        self.tableWidget.setColumnWidth(0, 400) # Nome
+        self.tableWidget.setColumnWidth(1, 200) # CPF/CNPJ
+        self.tableWidget.setColumnWidth(2, 300) # Contato
+        self.tableWidget.setColumnWidth(3, 100) # Status
+        self.tableWidget.setColumnWidth(4, 100) # cargo
+
+        self.carregar_funcionarios()
+
+    def carregar_funcionarios(self):
+        conexao = get_connection()
+        cursor = conexao.cursor()
+
+        cursor.execute("""
+            SELECT f.nome, f.cpf_cnpj, f.cargo, f.email, t.telefone
+            FROM funcionario f
+            LEFT JOIN telefone_funcionario t ON t.ID_funcionario = f.ID_funcionario
+        """)
+        funcionarios = cursor.fetchall()
+
+        self.tableWidget.setRowCount(len(funcionarios))
+
+        for i, (nome, documento, cargo, telefone, email) in enumerate(funcionarios):
+            contato = f"{email}\n{telefone}" if email and telefone else (email or telefone or "N/A")
+
+            self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(nome))
+            self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(documento))
+            self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(contato))
+            self.tableWidget.setItem(i, 3, QtWidgets.QTableWidgetItem("ATIVO"))
+            self.tableWidget.setItem(i, 4, QtWidgets.QTableWidgetItem(cargo))  # ou N/A se não tiver status
+            self.tableWidget.setRowHeight(i, 60)
+
+        cursor.close()
+        conexao.close()
 
 class FuncCadScreen(BaseScreen):
     def __init__(self, controller):
