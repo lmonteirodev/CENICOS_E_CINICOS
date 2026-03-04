@@ -2,7 +2,7 @@
 from database_manager import ClienteDAO, FuncDAO
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5 import uic, QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QDate
 # from reportlab.pdfgen import canvas
 import sys
 # import os
@@ -81,10 +81,59 @@ class AgendaScreen(BaseScreen):
         self.controller = controller
 
         # menu_lateral
-        self.btn_abrir_dashboard_menu.clicked.connect(lambda: self.controller.show_screen(DashScreen))
-        self.btn_abrir_cliente_menu.clicked.connect(lambda: self.controller.show_screen(ClientesScreen))
-        self.btn_abrir_funcionario_menu.clicked.connect(lambda: self.controller.show_screen(FuncScreen))
-        self.btn_abrir_documento_menu.clicked.connect(lambda: self.controller.show_screen(DocScreen))
+        self.dashboard_button.clicked.connect(lambda: self.controller.show_screen(DashScreen))
+        self.clientes_button.clicked.connect(lambda: self.controller.show_screen(ClientesScreen))
+        self.funcionarios_button.clicked.connect(lambda: self.controller.show_screen(FuncScreen))
+        self.relatorios_button.clicked.connect(lambda: self.controller.show_screen(DocScreen))
+
+        self.calendarWidget_2.currentPageChanged.connect(self.atualizar_label_data)
+        self.pushButton_2.clicked.connect(self.ir_para_hoje)
+        
+        # Chama a função uma vez no início para a label não começar vazia ou errada
+        self.atualizar_label_data(self.calendarWidget_2.yearShown(), self.calendarWidget_2.monthShown())
+
+    def ir_para_hoje(self):
+        hoje = QDate.currentDate()
+        
+        # Atualiza o calendário principal (grande)
+        self.calendarWidget_2.setSelectedDate(hoje)
+        
+        # Garante que o visual do calendário mostre o mês atual, caso você esteja navegando em outro ano
+        self.calendarWidget_2.setCurrentPage(hoje.year(), hoje.month())
+
+    def atualizar_label_data(self, ano, mes):
+        # Dicionário para converter o número do mês em nome (em português)
+        meses = {
+            1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril",
+            5: "Maio", 6: "Junho", 7: "Julho", 8: "Agosto",
+            9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"
+        }
+        
+        # Formata o texto: "Mês Ano"
+        texto_formatado = f"{meses[mes]} {ano}"
+        
+        # Define o texto na sua label (verifique se o nome no .ui é 'label_data')
+        self.label_2.setText(texto_formatado)
+
+        # Quando o PEQUENO mudar, atualiza o GRANDE
+        self.calendarWidget.selectionChanged.connect(self.sincronizar_para_grande)
+        
+        # Quando o GRANDE mudar, atualiza o PEQUENO
+        self.calendarWidget_2.selectionChanged.connect(self.sincronizar_para_pequeno)
+
+    def sincronizar_para_grande(self):
+        # Evita que o sinal do grande dispare de volta para o pequeno
+        self.calendarWidget_2.blockSignals(True)
+        data = self.calendarWidget.selectedDate()
+        self.calendarWidget_2.setSelectedDate(data)
+        self.calendarWidget_2.blockSignals(False)
+
+    def sincronizar_para_pequeno(self):
+        # Evita que o sinal do pequeno dispare de volta para o grande
+        self.calendarWidget.blockSignals(True)
+        data = self.calendarWidget_2.selectedDate()
+        self.calendarWidget.setSelectedDate(data)
+        self.calendarWidget.blockSignals(False)
 
 class ClientesScreen(BaseScreen):
     def __init__(self, controller):

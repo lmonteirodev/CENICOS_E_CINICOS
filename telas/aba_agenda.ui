@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
-<widget class="QWidget" name="Form">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -29,7 +29,7 @@ border: 1px;
 box-shadow: 5px 5px 5px;
 border-color:  rgb(149, 149, 149);</string>
     </property>
-      <widget class="QPushButton" name="btn_abrir_dashboard_menu">
+    <widget class="QPushButton" name="dashboard_button">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -76,7 +76,7 @@ hover-color {
       </size>
      </property>
     </widget>
-      <widget class="QPushButton" name="btn_abrir_cliente_menu">
+    <widget class="QPushButton" name="clientes_button">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -120,7 +120,7 @@ hover-color {
       </size>
      </property>
     </widget>
-      <widget class="QPushButton" name="btn_abrir_funcionario_menu">
+    <widget class="QPushButton" name="funcionarios_button">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -164,7 +164,7 @@ hover-color {
       </size>
      </property>
     </widget>
-      <widget class="QPushButton" name="btn_abrir_agenda_menu">
+    <widget class="QPushButton" name="agenda_button">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -208,7 +208,7 @@ hover-color {
       </size>
      </property>
     </widget>
-      <widget class="QPushButton" name="btn_abrir_documento_menu">
+    <widget class="QPushButton" name="relatorios_button">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -243,7 +243,7 @@ hover-color {
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>../Source/documentos.png</normaloff>../Source/documentos.png</iconset>
+       <normaloff>../Source/relatorios.png</normaloff>../Source/relatorios.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -313,7 +313,7 @@ color:rgb(29, 41, 61);</string>
       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt; font-weight:600;&quot;&gt;Agenda&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
@@ -464,7 +464,7 @@ QCalendarWidget QWidget{ background-color: white;
       <enum>QCalendarWidget::NoVerticalHeader</enum>
      </property>
      <property name="navigationBarVisible">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <property name="dateEditEnabled">
       <bool>true</bool>
@@ -777,6 +777,31 @@ border-radius: 10px;</string>
         <string>Dia</string>
        </property>
       </widget>
+     </widget>
+     <widget class="QPushButton" name="pushButton_2">
+      <property name="geometry">
+       <rect>
+        <x>530</x>
+        <y>30</y>
+        <width>93</width>
+        <height>45</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Georgia</family>
+        <pointsize>13</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color:rgb(202,68,69);
+border-radius:10px;
+color: white;
+text-align:center;</string>
+      </property>
+      <property name="text">
+       <string>Hoje</string>
+      </property>
      </widget>
     </widget>
     <zorder>frame_5</zorder>
