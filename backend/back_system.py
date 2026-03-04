@@ -1,5 +1,5 @@
 # IMPORTS----------------------------------------------------------------------------------------------------------
-from database import get_connection
+from database_manager import ClienteDAO, FuncDAO
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5 import uic, QtWidgets
 # from reportlab.pdfgen import canvas
@@ -27,7 +27,6 @@ class ScreenController:
         self.current_screen = screen_class(self)
         self.current_screen.showMaximized()
 
-
 class DashScreen(BaseScreen):
     def __init__(self, controller):
         super().__init__("telas/aba_dashboard.ui")
@@ -48,6 +47,31 @@ class DashScreen(BaseScreen):
         self.btn_abrir_agenda.clicked.connect(lambda: self.controller.show_screen(AgendaScreen))
         self.btn_abrir_agenda_2.clicked.connect(lambda: self.controller.show_screen(AgendaScreen))
         self.btn_abrir_documentos.clicked.connect(lambda: self.controller.show_screen(DocScreen))
+ 
+        self.tableWidget.setColumnCount(2)
+        self.tableWidget.setHorizontalHeaderLabels(["Nome", "Documento"])
+
+        header = self.tableWidget.horizontalHeader()
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+
+        v_header = self.tableWidget.verticalHeader()
+        v_header.setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+
+        self.atualizar_tabela()
+
+    def atualizar_tabela(self):
+        try:
+            clientes = ClienteDAO.buscar_ultimos_clientes(3)
+            self.tableWidget.setRowCount(len(clientes))
+
+            for i, (nome, documento) in enumerate(clientes):
+                self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(nome))
+                self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(documento))
+                self.tableWidget.setRowHeight(i, 40)
+        
+        except Exception as e:
+            print(f"Erro ao carregar mini-tabela: {e}")
 
 class AgendaScreen(BaseScreen):
     def __init__(self, controller):
@@ -95,32 +119,21 @@ class ClientesScreen(BaseScreen):
         self.carregar_clientes()
 
     def carregar_clientes(self):
-        conexao = get_connection()
-        cursor = conexao.cursor()
+        try:
+            clientes = ClienteDAO.carregar_clientes()
+            self.tableWidget.setRowCount(len(clientes))
 
-        cursor.execute("""
-            SELECT c.nome, c.cpf_cnpj, t.telefone, e.email
-            FROM cliente c
-            LEFT JOIN telefone_cliente t ON t.ID_cliente = c.ID_cliente
-            LEFT JOIN email_cliente e ON e.ID_cliente = c.ID_cliente
-        """)
-        clientes = cursor.fetchall()
+            for i, (nome, documento, telefone, email) in enumerate(clientes):
+                contato = f"{email}\n{telefone}" if email and telefone else (email or telefone or "N/A")
 
-        self.tableWidget.setRowCount(len(clientes))
-
-        for i, (nome, documento, telefone, email) in enumerate(clientes):
-            contato = f"{email}\n{telefone}" if email and telefone else (email or telefone or "N/A")
-
-            self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(nome))
-            self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(documento))
-            self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(contato))
-            self.tableWidget.setItem(i, 3, QtWidgets.QTableWidgetItem("ATIVO"))  # ou N/A se não tiver status
-            self.tableWidget.setItem(i, 4, QtWidgets.QTableWidgetItem("0"))      # número de serviços
-            self.tableWidget.setRowHeight(i, 60)
-
-        cursor.close()
-        conexao.close()
-
+                self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(nome))
+                self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(documento))
+                self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(contato))
+                self.tableWidget.setItem(i, 3, QtWidgets.QTableWidgetItem("ATIVO"))  # ou N/A se não tiver status
+                self.tableWidget.setItem(i, 4, QtWidgets.QTableWidgetItem("0"))      # número de serviços
+                self.tableWidget.setRowHeight(i, 60)
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Erro", f"Erro ao carregar: {e}")
 
 class ClientesCadScreen(BaseScreen):
     def __init__(self, controller):
@@ -142,56 +155,16 @@ class ClientesCadScreen(BaseScreen):
         self.pushButton_4.clicked.connect(lambda: self.controller.show_screen(ClientesScreen))
 
     def cadastrar_cliente (self):
+        nome = self.lineEdit_1.text().strip()
+        cpf_cnpj = self.lineEdit_2.text().strip()
+        telefone = self.lineEdit_3.text().strip()
+        email = self.lineEdit_4.text().strip()
+
+        if not (nome and cpf_cnpj and telefone and email):
+            return QtWidgets.QMessageBox.warning(self, "Aviso", "Preencha todos os campos.")
+            
         try:
-            conexao = get_connection()
-            if not conexao:
-                QtWidgets.QMessageBox.critical(self, "Erro", "Sem conexão com banco de dados.")
-                return
-            
-            def definir_tipo_pessoa (cpf_cnpj: str):
-                somente_numeros = re.sub(r'\D', '', cpf_cnpj)
-                if len(somente_numeros) == 11:
-                    return 'F'
-                elif len(somente_numeros) == 14:
-                    return 'J' 
-                else: raise ValueError("CPF/CNPJ inválido")
-
-            nome = self.lineEdit_1.text().strip()
-            cpf_cnpj = self.lineEdit_2.text().strip()
-            telefone = self.lineEdit_3.text().strip()
-            email = self.lineEdit_4.text().strip()
-
-            if not (nome and cpf_cnpj and telefone and email):
-                QtWidgets.QMessageBox.warning(self, "Aviso", "Preencha todos os campos.")
-                conexao.close()
-                return
-            
-            tipo_pessoa = definir_tipo_pessoa(cpf_cnpj)
-        
-            cursor = conexao.cursor()
-
-            # 1. Inserir cliente
-            sql_cliente = """INSERT INTO cliente (nome, cpf_cnpj, tipo_pessoa) VALUES (%s, %s, %s)"""
-            valores_cliente = (nome, cpf_cnpj, tipo_pessoa)
-            cursor.execute(sql_cliente, valores_cliente)
-
-            # 2. Obter o ID do cliente inserido
-            ID_cliente = cursor.lastrowid
-
-            # 3. Inserir telefone vinculado ao cliente
-            sql_telefone = """INSERT INTO telefone_cliente (telefone, iD_cliente) VALUES (%s, %s)"""
-            valores_telefone = (telefone, ID_cliente)
-            cursor.execute(sql_telefone, valores_telefone)
-
-            # 4. Inserir email vinculado ao cliente
-            sql_email = """INSERT INTO email_cliente (email, id_cliente) VALUES (%s, %s)"""
-            valores_email = (email, ID_cliente)
-            cursor.execute(sql_email, valores_email)
-
-            # Finalizar
-            conexao.commit()
-            cursor.close()
-            conexao.close()
+            ClienteDAO.cadastrar_cliente(nome, cpf_cnpj, telefone, email)
 
             QtWidgets.QMessageBox.information(self, "Sucesso", "Cliente cadastrado com sucesso!")
 
@@ -238,30 +211,21 @@ class FuncScreen(BaseScreen):
         self.carregar_funcionarios()
 
     def carregar_funcionarios(self):
-        conexao = get_connection()
-        cursor = conexao.cursor()
+        try:
+            funcionarios = FuncDAO.carregar_func()
+            self.tableWidget.setRowCount(len(funcionarios))
 
-        cursor.execute("""
-            SELECT f.nome, f.cpf_cnpj, f.cargo, f.email, t.telefone
-            FROM funcionario f
-            LEFT JOIN telefone_funcionario t ON t.ID_funcionario = f.ID_funcionario
-        """)
-        funcionarios = cursor.fetchall()
+            for i, (nome, documento, cargo, telefone, email) in enumerate(funcionarios):
+                contato = f"{email}\n{telefone}" if email and telefone else (email or telefone or "N/A")
 
-        self.tableWidget.setRowCount(len(funcionarios))
-
-        for i, (nome, documento, cargo, telefone, email) in enumerate(funcionarios):
-            contato = f"{email}\n{telefone}" if email and telefone else (email or telefone or "N/A")
-
-            self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(nome))
-            self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(documento))
-            self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(contato))
-            self.tableWidget.setItem(i, 3, QtWidgets.QTableWidgetItem("ATIVO"))
-            self.tableWidget.setItem(i, 4, QtWidgets.QTableWidgetItem(cargo))  # ou N/A se não tiver status
-            self.tableWidget.setRowHeight(i, 60)
-
-        cursor.close()
-        conexao.close()
+                self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(nome))
+                self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(documento))
+                self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(contato))
+                self.tableWidget.setItem(i, 3, QtWidgets.QTableWidgetItem("ATIVO"))
+                self.tableWidget.setItem(i, 4, QtWidgets.QTableWidgetItem(cargo))  # ou N/A se não tiver status
+                self.tableWidget.setRowHeight(i, 60)
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Erro", f"Erro ao carregar: {e}")
 
 class FuncCadScreen(BaseScreen):
     def __init__(self, controller):
@@ -283,52 +247,17 @@ class FuncCadScreen(BaseScreen):
         self.pushButton_4.clicked.connect(lambda: self.controller.show_screen(FuncScreen))
 
     def cadastrar_func (self):
-        try:
-            conexao = get_connection()
-            if not conexao:
-                QtWidgets.QMessageBox.critical(self, "Erro", "Sem conexão com banco de dados.")
-                return
-            
-            def definir_tipo_pessoa (cpf_cnpj: str):
-                somente_numeros = re.sub(r'\D', '', cpf_cnpj)
-                if len(somente_numeros) == 11:
-                    return 'F'
-                elif len(somente_numeros) == 14:
-                    return 'J' 
-                else: raise ValueError("CPF/CNPJ inválido")
+        nome = self.lineEdit_1.text().strip()
+        cpf_cnpj = self.lineEdit_2.text().strip()
+        cargo = self.lineEdit_3.text().strip()
+        telefone = self.lineEdit_4.text().strip()
+        email = self.lineEdit_5.text().strip()
 
-            nome = self.lineEdit_1.text().strip()
-            cpf_cnpj = self.lineEdit_2.text().strip()
-            cargo = self.lineEdit_3.text().strip()
-            telefone = self.lineEdit_4.text().strip()
-            email = self.lineEdit_5.text().strip()
-
-            if not (nome and cpf_cnpj and telefone and email and cargo):
-                QtWidgets.QMessageBox.warning(self, "Aviso", "Preencha todos os campos.")
-                conexao.close()
-                return
-            
-            tipo_pessoa = definir_tipo_pessoa(cpf_cnpj)
-        
-            cursor = conexao.cursor()
-
-            # Inserir funcuinario
-            sql_funcionario = """INSERT INTO funcionario (nome, cpf_cnpj, tipo_pessoa, cargo, email) VALUES (%s, %s, %s, %s, %s)"""
-            valores_funcionario = (nome, cpf_cnpj, tipo_pessoa, cargo, email)
-            cursor.execute(sql_funcionario, valores_funcionario)
-
-            # Obter o ID do funcionario inserido
-            ID_funcionario = cursor.lastrowid
-
-            # Inserir telefone vinculado ao funcionario
-            sql_telefone = """INSERT INTO telefone_funcionario (telefone, iD_funcionario) VALUES (%s, %s)"""
-            valores_telefone = (telefone, ID_funcionario)
-            cursor.execute(sql_telefone, valores_telefone)
-
-            # Finalizar
-            conexao.commit()
-            cursor.close()
-            conexao.close()
+        if not (nome and cpf_cnpj and telefone and email and cargo):
+            return QtWidgets.QMessageBox.warning(self, "Aviso", "Preencha todos os campos.")
+                
+        try:    
+            FuncDAO.cadastrar_func(nome, cpf_cnpj, telefone, cargo, email)
 
             QtWidgets.QMessageBox.information(self, "Sucesso", "Cliente cadastrado com sucesso!")
             
@@ -358,5 +287,4 @@ if __name__ == "__main__":
     controller = ScreenController()
     controller.show_screen(DashScreen)
 
-    # ClientesCadScreen.pushButton_3.clicked.connect(ClientesCadScreen.cadastrar_cliente)
     sys.exit(app.exec())

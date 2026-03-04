@@ -365,7 +365,7 @@ border-radius: 30px;</string>
      <widget class="QPushButton" name="btn_abrir_agenda_3">
       <property name="geometry">
        <rect>
-        <x>50</x>
+        <x>40</x>
         <y>200</y>
         <width>141</width>
         <height>51</height>
@@ -374,7 +374,7 @@ border-radius: 30px;</string>
       <property name="font">
        <font>
         <family>Georgia</family>
-        <pointsize>15</pointsize>
+        <pointsize>12</pointsize>
         <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
@@ -397,16 +397,16 @@ color: black;</string>
      <widget class="QPushButton" name="btn_abrir_novo_cliente_2">
       <property name="geometry">
        <rect>
-        <x>210</x>
+        <x>200</x>
         <y>200</y>
-        <width>141</width>
+        <width>161</width>
         <height>51</height>
        </rect>
       </property>
       <property name="font">
        <font>
         <family>Georgia</family>
-        <pointsize>15</pointsize>
+        <pointsize>12</pointsize>
         <weight>50</weight>
         <bold>false</bold>
        </font>
@@ -430,14 +430,14 @@ color:white;</string>
        <rect>
         <x>40</x>
         <y>90</y>
-        <width>641</width>
+        <width>761</width>
         <height>101</height>
        </rect>
       </property>
       <property name="font">
        <font>
         <family>Georgia</family>
-        <pointsize>20</pointsize>
+        <pointsize>18</pointsize>
         <weight>50</weight>
         <bold>false</bold>
         <strikeout>false</strikeout>
@@ -458,7 +458,7 @@ color:white;</string>
        <rect>
         <x>40</x>
         <y>30</y>
-        <width>280</width>
+        <width>291</width>
         <height>70</height>
        </rect>
       </property>
@@ -516,7 +516,7 @@ border-radius: 30px;</string>
       <property name="font">
        <font>
         <family>Georgia</family>
-        <pointsize>15</pointsize>
+        <pointsize>12</pointsize>
         <weight>50</weight>
         <bold>false</bold>
        </font>
@@ -537,7 +537,7 @@ border-radius: 30px;</string>
       <property name="font">
        <font>
         <family>Georgia</family>
-        <pointsize>15</pointsize>
+        <pointsize>12</pointsize>
         <underline>true</underline>
        </font>
       </property>
@@ -598,63 +598,41 @@ color: rgb(229, 135, 38);</string>
        <set>Qt::NoTextInteraction</set>
       </property>
      </widget>
-     <widget class="QTableView" name="dados_ultimos_clientes">
+     <widget class="QTableWidget" name="tableWidget">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>80</y>
-        <width>341</width>
-        <height>71</height>
+        <x>40</x>
+        <y>81</y>
+        <width>321</width>
+        <height>271</height>
        </rect>
       </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: transparent;
-border-radius: 16px;
-border:1px solid;
-border-color :rgb(98, 116, 168);
-color: black;</string>
-      </property>
-     </widget>
-     <widget class="QTableView" name="dados_ultimos_cliente_3">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>260</y>
-        <width>341</width>
-        <height>71</height>
-       </rect>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>-1</pointsize>
+       </font>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: transparent;
-border-radius: 16px;
-border:1px solid;
-border-color :rgb(98, 116, 168);
-color: black;</string>
+       <string notr="true">background-color: white;
+border: none;
+font-family: &quot;Times New Roman&quot;;
+font-size: 12px;
+</string>
       </property>
+      <property name="rowCount">
+       <number>3</number>
+      </property>
+      <attribute name="horizontalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <row/>
+      <row/>
+      <row/>
      </widget>
-     <widget class="QTableView" name="dados_ultimos_clientes_2">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>170</y>
-        <width>341</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: transparent;
-border-radius: 16px;
-border:1px solid;
-border-color :rgb(98, 116, 168);
-color: black;</string>
-      </property>
-     </widget>
-     <zorder>titulo_cliente</zorder>
-     <zorder>btn_abrir_clientes</zorder>
-     <zorder>cliente_icon_dashboard</zorder>
-     <zorder>dados_ultimos_cliente_3</zorder>
-     <zorder>dados_ultimos_clientes_2</zorder>
-     <zorder>dados_ultimos_clientes</zorder>
     </widget>
     <widget class="QFrame" name="frame_resumo_agenda">
      <property name="geometry">
@@ -687,7 +665,7 @@ border-radius: 30px;</string>
       <property name="font">
        <font>
         <family>Georgia</family>
-        <pointsize>15</pointsize>
+        <pointsize>12</pointsize>
         <weight>50</weight>
         <bold>false</bold>
        </font>
@@ -708,7 +686,7 @@ border-radius: 30px;</string>
       <property name="font">
        <font>
         <family>Georgia</family>
-        <pointsize>15</pointsize>
+        <pointsize>12</pointsize>
         <underline>true</underline>
        </font>
       </property>
@@ -761,56 +739,34 @@ color: rgb(229, 135, 38);</string>
        <set>Qt::NoTextInteraction</set>
       </property>
      </widget>
-     <widget class="QTableView" name="dados_proximo_agenda_3">
+     <widget class="QTableWidget" name="tableWidget_3">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>270</y>
-        <width>341</width>
-        <height>71</height>
+        <x>40</x>
+        <y>81</y>
+        <width>321</width>
+        <height>271</height>
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: transparent;
-border-radius: 16px;
-border:1px solid;
-border-color: rgb(235, 224, 224);
-color: black;</string>
+       <string notr="true">background-color: white;
+border: none;
+font-family: &quot;Times New Roman&quot;;
+font-size: 12px;
+</string>
       </property>
-     </widget>
-     <widget class="QTableView" name="dados_proximo_agenda_2">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>180</y>
-        <width>341</width>
-        <height>71</height>
-       </rect>
+      <property name="rowCount">
+       <number>3</number>
       </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: transparent;
-border-radius: 16px;
-border:1px solid;
-border-color: rgb(235, 224, 224);
-color: black;</string>
-      </property>
-     </widget>
-     <widget class="QTableView" name="dados_proximo_agenda">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>90</y>
-        <width>341</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: transparent;
-border-radius: 16px;
-border:1px solid;
-border-color: rgb(235, 224, 224);
-color: black;</string>
-      </property>
+      <attribute name="horizontalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <row/>
+      <row/>
+      <row/>
      </widget>
     </widget>
     <widget class="QFrame" name="frame_resumo_pagar">
@@ -831,11 +787,11 @@ color: black;</string>
       <enum>Qt::LeftToRight</enum>
      </property>
      <property name="styleSheet">
-      <string notr="true">#Frame_Falta_Pagar{
-background-color:white;
-border-radius: 30px;
-border: 1px solid;
-border-color: rgb(238, 238, 238);
+      <string notr="true">#frame_resumo_pagar{
+	background-color:white;
+	border-radius: 30px;
+	border: 1px solid;
+	border-color: rgb(238, 238, 238);
 }
 </string>
      </property>
@@ -857,7 +813,7 @@ border-color: rgb(238, 238, 238);
       <property name="font">
        <font>
         <family>Georgia</family>
-        <pointsize>15</pointsize>
+        <pointsize>12</pointsize>
         <weight>50</weight>
         <bold>false</bold>
        </font>
@@ -931,7 +887,7 @@ color: rgb(229, 135, 38);</string>
       <property name="font">
        <font>
         <family>Georgia</family>
-        <pointsize>15</pointsize>
+        <pointsize>12</pointsize>
         <weight>50</weight>
         <bold>false</bold>
         <kerning>true</kerning>
@@ -959,63 +915,35 @@ border-color: rgb(230, 223, 172);</string>
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QTableView" name="dados_falta_pagar">
+     <widget class="QTableWidget" name="tableWidget_2">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>80</y>
-        <width>341</width>
-        <height>71</height>
+        <x>40</x>
+        <y>81</y>
+        <width>321</width>
+        <height>271</height>
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: transparent;
-border-radius: 16px;
-border:1px solid;
-border-color :rgb(230, 223, 172);
-color: black;</string>
+       <string notr="true">background-color: white;
+border: none;
+font-family: &quot;Times New Roman&quot;;
+font-size: 12px;
+</string>
       </property>
+      <property name="rowCount">
+       <number>3</number>
+      </property>
+      <attribute name="horizontalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <row/>
+      <row/>
+      <row/>
      </widget>
-     <widget class="QTableView" name="dados_falta_pagar_2">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>170</y>
-        <width>341</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: transparent;
-border-radius: 16px;
-border:1px solid;
-border-color :rgb(230, 223, 172);
-color: black;</string>
-      </property>
-     </widget>
-     <widget class="QTableView" name="dados_falta_pagar_3">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>260</y>
-        <width>341</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: transparent;
-border-radius: 16px;
-border:1px solid;
-border-color :rgb(230, 223, 172);
-color: black;</string>
-      </property>
-     </widget>
-     <zorder>titulo_falta_pagar</zorder>
-     <zorder>icon_atencao</zorder>
-     <zorder>titulo_atencao</zorder>
-     <zorder>dados_falta_pagar_2</zorder>
-     <zorder>dados_falta_pagar_3</zorder>
-     <zorder>dados_falta_pagar</zorder>
     </widget>
     <widget class="QFrame" name="cadastrar_cliente">
      <property name="geometry">
@@ -1048,7 +976,7 @@ border-radius: 30px;</string>
       <property name="font">
        <font>
         <family>Georgia</family>
-        <pointsize>15</pointsize>
+        <pointsize>12</pointsize>
         <weight>50</weight>
         <bold>false</bold>
        </font>
@@ -1106,7 +1034,7 @@ border-radius: 30px;</string>
       <property name="font">
        <font>
         <family>Georgia</family>
-        <pointsize>15</pointsize>
+        <pointsize>12</pointsize>
         <weight>50</weight>
         <bold>false</bold>
        </font>
@@ -1161,7 +1089,7 @@ border-radius: 30px;</string>
       <property name="font">
        <font>
         <family>Georgia</family>
-        <pointsize>15</pointsize>
+        <pointsize>12</pointsize>
         <weight>50</weight>
         <bold>false</bold>
        </font>
@@ -1216,7 +1144,7 @@ border-radius: 30px;</string>
       <property name="font">
        <font>
         <family>Georgia</family>
-        <pointsize>15</pointsize>
+        <pointsize>12</pointsize>
         <weight>50</weight>
         <bold>false</bold>
        </font>
@@ -1240,6 +1168,14 @@ background-color: rgb(255, 247, 237);</string>
       </property>
      </widget>
     </widget>
+    <zorder>main_dashboard_frame</zorder>
+    <zorder>frame_resumo_cliente</zorder>
+    <zorder>frame_resumo_agenda</zorder>
+    <zorder>cadastrar_cliente</zorder>
+    <zorder>frame_registrar_agenda</zorder>
+    <zorder>frame_novo_service</zorder>
+    <zorder>frame_pagar_conta</zorder>
+    <zorder>frame_resumo_pagar</zorder>
    </widget>
   </widget>
  </widget>

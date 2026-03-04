@@ -9,7 +9,6 @@ def get_connection():
             password="0709",
             database="db_cenicosecinicos"
         )
-        print("Conectado com sucesso!")
         return conexao
     
     except Exception as e:
