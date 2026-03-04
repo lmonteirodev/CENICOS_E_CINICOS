@@ -85,6 +85,8 @@ class AgendaScreen(BaseScreen):
         self.clientes_button.clicked.connect(lambda: self.controller.show_screen(ClientesScreen))
         self.funcionarios_button.clicked.connect(lambda: self.controller.show_screen(FuncScreen))
         self.relatorios_button.clicked.connect(lambda: self.controller.show_screen(DocScreen))
+        self.pushButton.clicked.connect(lambda:self.controller.show_screen(AgendamentoScreen))
+
 
         self.calendarWidget_2.currentPageChanged.connect(self.atualizar_label_data)
         self.pushButton_2.clicked.connect(self.ir_para_hoje)
@@ -134,6 +136,20 @@ class AgendaScreen(BaseScreen):
         data = self.calendarWidget_2.selectedDate()
         self.calendarWidget.setSelectedDate(data)
         self.calendarWidget.blockSignals(False)
+
+class AgendamentoScreen(BaseScreen):
+    def __init__(self, controller):
+        super().__init__("telas/aba_agenda_ev.ui")
+        self.controller = controller
+
+        # menu_lateral
+        self.dashboard_button.clicked.connect(lambda: self.controller.show_screen(DashScreen))
+        self.clientes_button.clicked.connect(lambda: self.controller.show_screen(ClientesScreen))
+        self.funcionarios_button.clicked.connect(lambda: self.controller.show_screen(FuncScreen))
+        self.relatorios_button.clicked.connect(lambda: self.controller.show_screen(DocScreen))
+        self.agenda_button.clicked.connect(lambda: self.controller.show_screen(AgendaScreen))
+
+        self.pushButton_4.clicked.connect(lambda: self.controller.show_screen(AgendaScreen))
 
 class ClientesScreen(BaseScreen):
     def __init__(self, controller):
