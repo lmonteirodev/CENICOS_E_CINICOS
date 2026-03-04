@@ -2,6 +2,7 @@
 from database_manager import ClienteDAO, FuncDAO
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5 import uic, QtWidgets
+from PyQt5.QtCore import Qt
 # from reportlab.pdfgen import canvas
 import sys
 # import os
@@ -58,6 +59,8 @@ class DashScreen(BaseScreen):
         v_header = self.tableWidget.verticalHeader()
         v_header.setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
 
+        self.tableWidget.setShowGrid(False)
+
         self.atualizar_tabela()
 
     def atualizar_tabela(self):
@@ -69,7 +72,6 @@ class DashScreen(BaseScreen):
                 self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(nome))
                 self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(documento))
                 self.tableWidget.setRowHeight(i, 40)
-        
         except Exception as e:
             print(f"Erro ao carregar mini-tabela: {e}")
 
@@ -116,6 +118,8 @@ class ClientesScreen(BaseScreen):
         self.tableWidget.setColumnWidth(3, 100) # Status
         self.tableWidget.setColumnWidth(4, 100) # Qtd Serviços
 
+        self.tableWidget.setShowGrid(False)
+
         self.carregar_clientes()
 
     def carregar_clientes(self):
@@ -123,14 +127,28 @@ class ClientesScreen(BaseScreen):
             clientes = ClienteDAO.carregar_clientes()
             self.tableWidget.setRowCount(len(clientes))
 
+
+            # ... dentro do seu método ...
             for i, (nome, documento, telefone, email) in enumerate(clientes):
                 contato = f"{email}\n{telefone}" if email and telefone else (email or telefone or "N/A")
 
                 self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(nome))
-                self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(documento))
-                self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(contato))
-                self.tableWidget.setItem(i, 3, QtWidgets.QTableWidgetItem("ATIVO"))  # ou N/A se não tiver status
-                self.tableWidget.setItem(i, 4, QtWidgets.QTableWidgetItem("0"))      # número de serviços
+
+                item_doc = QtWidgets.QTableWidgetItem(documento)
+                item_contato = QtWidgets.QTableWidgetItem(contato)
+                item_status = QtWidgets.QTableWidgetItem("ATIVO")
+                item_servicos = QtWidgets.QTableWidgetItem("0")
+
+                item_doc.setTextAlignment(Qt.AlignCenter)
+                item_contato.setTextAlignment(Qt.AlignCenter)
+                item_status.setTextAlignment(Qt.AlignCenter)
+                item_servicos.setTextAlignment(Qt.AlignCenter)
+
+                self.tableWidget.setItem(i, 1, item_doc)
+                self.tableWidget.setItem(i, 2, item_contato)
+                self.tableWidget.setItem(i, 3, item_status)
+                self.tableWidget.setItem(i, 4, item_servicos)
+
                 self.tableWidget.setRowHeight(i, 60)
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Erro", f"Erro ao carregar: {e}")
@@ -208,6 +226,8 @@ class FuncScreen(BaseScreen):
         self.tableWidget.setColumnWidth(3, 100) # Status
         self.tableWidget.setColumnWidth(4, 100) # cargo
 
+        self.tableWidget.setShowGrid(False)
+
         self.carregar_funcionarios()
 
     def carregar_funcionarios(self):
@@ -219,10 +239,22 @@ class FuncScreen(BaseScreen):
                 contato = f"{email}\n{telefone}" if email and telefone else (email or telefone or "N/A")
 
                 self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(nome))
-                self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(documento))
-                self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(contato))
-                self.tableWidget.setItem(i, 3, QtWidgets.QTableWidgetItem("ATIVO"))
-                self.tableWidget.setItem(i, 4, QtWidgets.QTableWidgetItem(cargo))  # ou N/A se não tiver status
+
+                item_doc = QtWidgets.QTableWidgetItem(documento)
+                item_contato = QtWidgets.QTableWidgetItem(contato)
+                item_status = QtWidgets.QTableWidgetItem("ATIVO")
+                item_cargo = QtWidgets.QTableWidgetItem(cargo)
+
+                item_doc.setTextAlignment(Qt.AlignCenter)
+                item_contato.setTextAlignment(Qt.AlignCenter)
+                item_status.setTextAlignment(Qt.AlignCenter)
+                item_cargo.setTextAlignment(Qt.AlignCenter)
+
+                self.tableWidget.setItem(i, 1, item_doc)
+                self.tableWidget.setItem(i, 2, item_contato)
+                self.tableWidget.setItem(i, 3, item_status)
+                self.tableWidget.setItem(i, 4, item_cargo)
+
                 self.tableWidget.setRowHeight(i, 60)
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Erro", f"Erro ao carregar: {e}")

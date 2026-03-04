@@ -610,14 +610,13 @@ color: rgb(229, 135, 38);</string>
       <property name="font">
        <font>
         <family>Times New Roman</family>
-        <pointsize>-1</pointsize>
+        <pointsize>12</pointsize>
        </font>
       </property>
       <property name="styleSheet">
        <string notr="true">background-color: white;
 border: none;
 font-family: &quot;Times New Roman&quot;;
-font-size: 12px;
 </string>
       </property>
       <property name="rowCount">
@@ -748,11 +747,16 @@ color: rgb(229, 135, 38);</string>
         <height>271</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true">background-color: white;
 border: none;
 font-family: &quot;Times New Roman&quot;;
-font-size: 12px;
 </string>
       </property>
       <property name="rowCount">
@@ -924,11 +928,16 @@ border-color: rgb(230, 223, 172);</string>
         <height>271</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true">background-color: white;
 border: none;
 font-family: &quot;Times New Roman&quot;;
-font-size: 12px;
 </string>
       </property>
       <property name="rowCount">

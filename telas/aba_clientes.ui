@@ -330,7 +330,7 @@ border-radius: 14px;</string>
      </property>
      <property name="font">
       <font>
-       <family>Times New Roman</family>
+       <family>Georgia</family>
        <pointsize>12</pointsize>
        <weight>50</weight>
        <bold>false</bold>
@@ -351,14 +351,12 @@ border-radius: 14px;</string>
 	padding: 8px;
 }
 QHeaderView::section:first {
-    border: none;
 	border-top-left-radius: 20px;  /* Canto superior esquerdo */
     border-top-right-radius: 0px;
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 0px;
 }
 QHeaderView::section:last {
-    border: none;
 	border-top-left-radius: 0px;
     border-top-right-radius: 20px;
     border-bottom-left-radius: 0px;
@@ -376,20 +374,19 @@ QTableWidget::section:first {
     font-size: 12px;
 	font-weight: bold;
     color: black;
-    border: none;
 }
 QTableWidget::section:second, third {
 	font-family: &quot;Times New Roman&quot;;
     font-size: 10px;
     color: rgb(152, 152, 152);
-    border: none;
+	text-align: center;
 }
 QTableWidget::section:last {
 	font-family: &quot;Times New Roman&quot;;
     font-size: 12px;
 	font-weight: bold;
     color: black;
-    border: none;
+	text-align: center;
 }</string>
      </property>
      <property name="editTriggers">
