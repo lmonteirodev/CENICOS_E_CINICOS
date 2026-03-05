@@ -1,4 +1,5 @@
 # ============================== IMPORTS ==========================
+from database_manager import ClienteDAO, FuncDAO
 from PyQt5 import QtWidgets, uic, QtCore, QtGui
 from PyQt5.QtCore import Qt, QDate
 import sys
@@ -12,10 +13,11 @@ def _connect_menu_buttons(ui, controller):
     """
     mapping = {
         "agenda": ["btn_abrir_agenda_menu", "btn_abrir_agenda", "btn_abrir_agenda_2", "btn_abrir_agenda_3"],
-        "clientes": ["btn_abrir_cliente_menu", "btn_abrir_clientes", "btn_abrir_novo_cliente", "btn_abrir_novo_cliente_2"],
+        "clientes": ["btn_abrir_cliente_menu", "btn_abrir_clientes"],
         "funcionarios": ["btn_abrir_funcionario_menu"],
         "documentos": ["btn_abrir_documento_menu", "btn_abrir_documentos"],
         "dashboard": ["btn_abrir_dashboard_menu"],
+        "cadastro_cliente": ["btn_abrir_novo_cliente_2","btn_cadastrar_cliente"]
     }
 
     for screen, names in mapping.items():
@@ -55,6 +57,27 @@ class ClienteScreen(QtWidgets.QWidget):
         super().__init__()
         self.controller = controller
         self.ui = uic.loadUi("telas/form_cliente.ui")
+        layout = QtWidgets.QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.ui)
+        # menu_lateral - conectar botões
+        
+        self.novo_cliente = self.ui.findChild(QtWidgets.QPushButton, "pushButton")
+        
+        self._connect_buttons()
+
+        if self.novo_cliente:
+            self.novo_cliente.clicked.connect(lambda: self.controller.show_screen("cadastro_cliente"))
+            self.novo_cliente.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+
+    def _connect_buttons(self):
+        _connect_menu_buttons(self.ui, self.controller)
+
+class ClientesCadScreen(QtWidgets.QWidget):
+    def __init__(self, controller):
+        super().__init__()
+        self.controller = controller
+        self.ui = uic.loadUi("telas/form_cliente_cad.ui")
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
@@ -183,6 +206,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.adicionar_tela("documentos", DocScreen(self))
         self.adicionar_tela("agenda", AgendaScreen(self))
         self.adicionar_tela("agendamentos", AgendamentosScreen(self))
+        self.adicionar_tela("cadastro_cliente", ClientesCadScreen(self))
 
         self.show_screen("dashboard")
 
