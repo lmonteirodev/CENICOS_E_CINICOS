@@ -1,7 +1,9 @@
+# ============================== IMPORTS ==========================
 from PyQt5 import QtWidgets, uic, QtCore, QtGui
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import Qt, QDate
+import sys
 
-
+# ======================== FUNÇÃO MESTRA ==========================
 def _connect_menu_buttons(ui, controller):
     """Connect menu buttons from a loaded UI to controller.show_screen.
 
@@ -31,22 +33,9 @@ def _connect_menu_buttons(ui, controller):
                     # non-fatal; continue trying other buttons
                     pass
                 print(f"connected UI button '{name}' -> '{screen}'")
-import sys
 
-class ScreenController:
-    def __init__(self):
-        self.current_screen = None
-
-    def show_screen(self, screen_class):
-        # Fecha a tela atual, se existir
-        if self.current_screen is not None:
-            self.current_screen.close()
-
-        # Cria nova tela
-        self.current_screen = screen_class(self)
-        self.current_screen.showMaximized()
-
-class dash_screen(QtWidgets.QWidget):
+# ======================== CLASSES DE TELAS =========================
+class DashScreen(QtWidgets.QWidget):
     def __init__(self, controller):
         super().__init__()
         self.screen_size = controller
@@ -61,11 +50,11 @@ class dash_screen(QtWidgets.QWidget):
     def _connect_buttons(self):
         _connect_menu_buttons(self.ui, self.controller)
     
-class clientes_screen(QtWidgets.QWidget):
+class ClienteScreen(QtWidgets.QWidget):
     def __init__(self, controller):
         super().__init__()
         self.controller = controller
-        self.ui = uic.loadUi("telas/aba_clientes.ui")
+        self.ui = uic.loadUi("telas/form_cliente.ui")
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
@@ -75,11 +64,11 @@ class clientes_screen(QtWidgets.QWidget):
     def _connect_buttons(self):
         _connect_menu_buttons(self.ui, self.controller)
 
-class func_screen(QtWidgets.QWidget):
+class FuncScreen(QtWidgets.QWidget):
     def __init__(self, controller):
         super().__init__()
         self.controller = controller
-        self.ui = uic.loadUi("telas/aba_funcionarios.ui")
+        self.ui = uic.loadUi("telas/form_funcionarios.ui")
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
@@ -89,11 +78,11 @@ class func_screen(QtWidgets.QWidget):
     def _connect_buttons(self):
         _connect_menu_buttons(self.ui, self.controller)
 
-class doc_screen(QtWidgets.QWidget):
+class DocScreen(QtWidgets.QWidget):
     def __init__(self, controller):
         super().__init__()
         self.controller = controller
-        self.ui = uic.loadUi("telas/aba_documentos.ui")
+        self.ui = uic.loadUi("telas/form_documentos.ui")
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
@@ -103,11 +92,73 @@ class doc_screen(QtWidgets.QWidget):
     def _connect_buttons(self):
         _connect_menu_buttons(self.ui, self.controller)
 
-class agenda_screen(QtWidgets.QWidget):
+class AgendaScreen(QtWidgets.QWidget):
     def __init__(self, controller):
         super().__init__()
         self.controller = controller
-        self.ui = uic.loadUi("telas/aba_agenda.ui")
+        self.ui = uic.loadUi("telas/form_agenda.ui")
+        
+        layout = QtWidgets.QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.ui)
+
+        self.calendar_grande = self.ui.findChild(QtWidgets.QCalendarWidget, "calendarWidget_2")
+        self.calendar_pequeno = self.ui.findChild(QtWidgets.QCalendarWidget, "calendarWidget")
+        self.label_mes_ano = self.ui.findChild(QtWidgets.QLabel, "label_2")
+        self.btn_hoje = self.ui.findChild(QtWidgets.QPushButton, "pushButton_2")
+        self.btn_agendar = self.ui.findChild(QtWidgets.QPushButton, "pushButton")
+
+        self._connect_buttons()
+
+        if self.btn_agendar:
+            self.btn_agendar.clicked.connect(lambda: self.controller.show_screen("agendamentos"))
+            self.btn_agendar.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        
+        if self.btn_hoje:
+            self.btn_hoje.clicked.connect(self.ir_para_hoje)
+
+        if self.calendar_grande and self.calendar_pequeno:
+            self.calendar_grande.currentPageChanged.connect(self.atualizar_label_data)
+            self.calendar_pequeno.selectionChanged.connect(self.sincronizar_para_grande)
+            self.calendar_grande.selectionChanged.connect(self.sincronizar_para_pequeno)
+
+            self.atualizar_label_data(self.calendar_grande.yearShown(), self.calendar_grande.monthShown())
+
+    def ir_para_hoje(self):
+        hoje = QDate.currentDate()
+        self.calendar_grande.setSelectedDate(hoje)
+        self.calendar_grande.setCurrentPage(hoje.year(), hoje.month())
+
+    def atualizar_label_data(self, ano, mes):
+        meses = {
+            1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril",
+            5: "Maio", 6: "Junho", 7: "Julho", 8: "Agosto",
+            9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"
+        }
+        texto = f"{meses[mes]} {ano}"
+        if self.label_mes_ano:
+            self.label_mes_ano.setText(texto)
+
+    def sincronizar_para_grande(self):
+        self.calendar_grande.blockSignals(True)
+        data = self.calendar_pequeno.selectedDate()
+        self.calendar_grande.setSelectedDate(data)
+        self.calendar_grande.blockSignals(False)
+
+    def sincronizar_para_pequeno(self):
+        self.calendar_pequeno.blockSignals(True)
+        data = self.calendar_grande.selectedDate()
+        self.calendar_pequeno.setSelectedDate(data)
+        self.calendar_pequeno.blockSignals(False)
+
+    def _connect_buttons(self):
+        _connect_menu_buttons(self.ui, self.controller)
+
+class AgendamentosScreen(QtWidgets.QWidget):
+    def __init__(self, controller):
+        super().__init__()
+        self.controller = controller
+        self.ui = uic.loadUi("telas/form_agenda_ev.ui")
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
@@ -117,36 +168,40 @@ class agenda_screen(QtWidgets.QWidget):
     def _connect_buttons(self):
         _connect_menu_buttons(self.ui, self.controller)
 
-class mainwindow(QtWidgets.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
 
         self.stack = QtWidgets.QStackedWidget()
         self.setCentralWidget(self.stack)
 
-        self.screens = {}
-        self.screens["dashboard"] = dash_screen(self)
-        self.screens["clientes"] = clientes_screen(self)
-        self.screens["funcionarios"] = func_screen(self)
-        self.screens["documentos"] = doc_screen(self)
-        self.screens["agenda"] = agenda_screen(self)
+        self.indices_telas = {}
 
-        for screen in self.screens.values():
-            self.stack.addWidget(screen)
+        self.adicionar_tela("dashboard", DashScreen(self))
+        self.adicionar_tela("clientes", ClienteScreen(self))
+        self.adicionar_tela("funcionarios", FuncScreen(self))
+        self.adicionar_tela("documentos", DocScreen(self))
+        self.adicionar_tela("agenda", AgendaScreen(self))
+        self.adicionar_tela("agendamentos", AgendamentosScreen(self))
 
         self.show_screen("dashboard")
 
+    def adicionar_tela(self, nome, widget):
+        indice = self.stack.addWidget(widget)
+        self.indices_telas[nome] = indice
 
-# if __name__ == "__main__":
-#     app = QApplication(sys.argv)
+    def show_screen(self, nome):
+        """Método que os botões do menu chamam via controller"""
+        if nome in self.indices_telas:
+            indice = self.indices_telas[nome]
+            self.stack.setCurrentIndex(indice)
+            print(f"Mudando para a tela: {nome}")
+        else:
+            print(f"Erro: Tela '{nome}' não encontrada no mapeamento.")
 
-#     controller = ScreenController()
-#     controller.show_screen(mainwindow)
 
-#     # ClientesCadScreen.pushButton_3.clicked.connect(ClientesCadScreen.cadastrar_cliente)
-#     sys.exit(app.exec())
-    
+# ======================== TESTE DE TELAS ========================= 
 app = QtWidgets.QApplication(sys.argv)
-window = mainwindow()
-window.showFullScreen()   # ou showMaximized()
+window = MainWindow()
+window.showMaximized()
 sys.exit(app.exec_())

@@ -242,7 +242,7 @@ hover-color {
     </property>
     <property name="icon">
      <iconset>
-      <normaloff>../Source/relatorios.png</normaloff>../Source/relatorios.png</iconset>
+      <normaloff>../Source/documentos.png</normaloff>../Source/documentos.png</iconset>
     </property>
     <property name="iconSize">
      <size>
