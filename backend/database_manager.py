@@ -34,20 +34,14 @@ class ClienteDAO:
         conexao = get_connection()
         cursor = conexao.cursor()
         try:
-            # 1. Inserir cliente
             cursor.execute("""INSERT INTO cliente (nome, cpf_cnpj, tipo_pessoa) VALUES (%s, %s, %s)""", (nome, cpf_cnpj, tipo_pessoa))
 
-            # 2. Obter o ID do cliente inserido
             ID_cliente = cursor.lastrowid
 
-            # 3. Inserir telefone vinculado ao cliente
             cursor.execute("""INSERT INTO telefone_cliente (telefone, iD_cliente) VALUES (%s, %s)""", (telefone, ID_cliente))
 
-            # 4. Inserir email vinculado ao cliente
             cursor.execute("""INSERT INTO email_cliente (email, id_cliente) VALUES (%s, %s)""", (email, ID_cliente))
             
-
-            # Finalizar
             conexao.commit()
         except Exception as e:
             conexao.rollback()
@@ -60,7 +54,6 @@ class ClienteDAO:
     def buscar_ultimos_clientes(limite=3):
         conexao = get_connection()
         cursor = conexao.cursor()
-        # Busca Nome e CPF/CNPJ dos últimos cadastrados
         cursor.execute("""
             SELECT nome, cpf_cnpj FROM cliente ORDER BY ID_cliente DESC LIMIT %s
         """, (limite,))
@@ -101,13 +94,10 @@ class FuncDAO:
             conexao = get_connection()        
             cursor = conexao.cursor()
             try:
-                # Inserir funcionario
                 cursor.execute("""INSERT INTO funcionario (nome, cpf_cnpj, tipo_pessoa, cargo, email) VALUES (%s, %s, %s, %s, %s)""", (nome, cpf_cnpj, tipo_pessoa, cargo, email))
                 
-                # Obter o ID do funcionario inserido
                 ID_funcionario = cursor.lastrowid
 
-                # Inserir telefone vinculado ao funcionario
                 cursor.execute("""INSERT INTO telefone_funcionario (telefone, iD_funcionario) VALUES (%s, %s)""", (telefone, ID_funcionario))
 
                 conexao.commit()
@@ -118,8 +108,6 @@ class FuncDAO:
                 cursor.close()
                 conexao.close()
 
-from database import get_connection
-
 class AgendamentoDAO:
     @staticmethod
     def carregar_combos_interface():
@@ -127,11 +115,9 @@ class AgendamentoDAO:
         conexao = get_connection()
         cursor = conexao.cursor()
         try:
-            # Busca Clientes
             cursor.execute("SELECT ID_cliente, nome FROM cliente ORDER BY nome")
             clientes = cursor.fetchall()
             
-            # Busca Funcionários
             cursor.execute("SELECT ID_funcionario, nome FROM funcionario ORDER BY nome")
             funcs = cursor.fetchall()
             
@@ -148,8 +134,6 @@ class AgendamentoDAO:
         conexao = get_connection()
         cursor = conexao.cursor()
         try:
-            # 1. Inserção na tabela 'servico' (Obrigatória antes da agenda)
-            # Resolve o Erro 1452 garantindo que id_tipo_servico exista
             cursor.execute("""
                 INSERT INTO servico (status_servico, data_servico, ID_funcionario, ID_tipo_servico) 
                 VALUES (%s, %s, %s, %s)
@@ -157,14 +141,12 @@ class AgendamentoDAO:
             
             id_servico_gerado = cursor.lastrowid
 
-            # 2. Inserção na tabela 'agenda'
-            # Correção Erro 1054: Removido ID_perfil (não existe nesta tabela no diagrama)
             sql_agenda = """
                 INSERT INTO agenda (data_select, horario_inicio, horario_fim, 
                                    ID_servico, ID_funcionario, ID_cliente)
                 VALUES (%s, %s, %s, %s, %s, %s)
             """
-            # Horários padrão para evitar erro de campo vazio
+
             cursor.execute(sql_agenda, (data_formatada, "08:00:00", "18:00:00", 
                                         id_servico_gerado, id_fun, id_cli))
             
@@ -183,14 +165,13 @@ class AgendamentoDAO:
         conexao = get_connection()
         cursor = conexao.cursor()
         try:
-            # Seleciona a data e o tipo de serviço (para saber a cor)
             sql = """
                 SELECT a.data_select, s.ID_tipo_servico 
                 FROM agenda a
                 JOIN servico s ON a.ID_servico = s.ID_servico
             """
             cursor.execute(sql)
-            return cursor.fetchall() # Retorna algo como [(datetime, 1), (datetime, 2)]
+            return cursor.fetchall()
         finally:
             cursor.close()
             conexao.close()
