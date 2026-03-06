@@ -70,7 +70,7 @@ class FuncDAO:
 
         cursor.execute("""
             SELECT f.nome, f.cpf_cnpj, f.cargo, f.email, t.telefone
-            FROM funcionario f
+            FROM funcionario as f
             LEFT JOIN telefone_funcionario t ON t.ID_funcionario = f.ID_funcionario
         """)
         funcionarios = cursor.fetchall()

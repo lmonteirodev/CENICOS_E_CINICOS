@@ -2,6 +2,7 @@
 from database_manager import ClienteDAO, FuncDAO, AgendamentoDAO
 from PyQt5 import QtWidgets, uic, QtCore, QtGui
 from PyQt5.QtCore import Qt, QDate
+from PyQt5.QtWidgets import QButtonGroup
 import sys
 
 # ======================== FUNÇÃO MESTRA ==========================
@@ -110,6 +111,31 @@ class ClienteScreen(QtWidgets.QWidget):
         self.novo_cliente = self.ui.findChild(QtWidgets.QPushButton, "pushButton")
         self.tableWidget = self.ui.findChild(QtWidgets.QTableWidget, "tableWidget")
         
+        #======================== Botões de Filtro =========================
+        # BOTÕES DE FILTRO
+        self.btn_todos = self.ui.findChild(QtWidgets.QPushButton, "btn_filtro_todos_cliente")
+        self.btn_ativos = self.ui.findChild(QtWidgets.QPushButton, "btn_filtro_ativos_cliente")
+        self.btn_inativos = self.ui.findChild(QtWidgets.QPushButton, "btn_filtro_inativos_cliente")
+        self.btn_filtrar = self.ui.findChild(QtWidgets.QPushButton, "btn_filtro_cliente")
+
+        # GRUPO DE FILTRO
+        self.grupo_filtro = QButtonGroup()
+
+        self.grupo_filtro.addButton(self.btn_todos)
+        self.grupo_filtro.addButton(self.btn_ativos)
+        self.grupo_filtro.addButton(self.btn_inativos)
+
+        # tornar os botões selecionáveis
+        self.btn_todos.setCheckable(True)
+        self.btn_ativos.setCheckable(True)
+        self.btn_inativos.setCheckable(True)
+
+        self.btn_todos.setChecked(True)
+
+        # conectar botão de filtro
+        if self.btn_filtrar:
+            self.btn_filtrar.clicked.connect(self.aplicar_filtro)
+        
         self._connect_buttons()
 
         if self.novo_cliente:
@@ -119,7 +145,8 @@ class ClienteScreen(QtWidgets.QWidget):
         if self.tableWidget:
             self.configurar_tabela()
             self.carregar_clientes()
-
+        
+    
     def configurar_tabela(self):
         self.tableWidget.setColumnCount(5)
         self.tableWidget.setHorizontalHeaderLabels(
@@ -138,7 +165,9 @@ class ClienteScreen(QtWidgets.QWidget):
         self.tableWidget.setColumnWidth(4, 100) # Qtd Serviços
         self.tableWidget.setShowGrid(False)
 
-    def carregar_clientes(self):
+    def carregar_clientes(self,filtro="todos"):
+        
+            
         try:
             clientes = ClienteDAO.carregar_clientes()
             self.tableWidget.setRowCount(len(clientes))
@@ -168,7 +197,25 @@ class ClienteScreen(QtWidgets.QWidget):
         except Exception as e:
             print(f"Erro detalhado: {e}")
             QtWidgets.QMessageBox.critical(self, "Erro", f"Erro ao carregar clientes: {e}")
+        if filtro == "ativos":
+            clientes = [c for c in clientes if c[3] == "ativos"]
+        elif filtro == "inativos":    
+            clientes = [c for c in clientes if c[3] == "inativos"]
+            
+        self.tableWidget.setRowCount(len(clientes))
+    try:       
+        def aplicar_filtro(self):
 
+            if self.btn_todos.isChecked():
+                self.carregar_clientes("todos")
+            elif self.btn_ativos.isChecked():
+                self.carregar_clientes("ativos")
+            elif self.btn_inativos.isChecked():
+                self.carregar_clientes("inativos")
+
+    except Exception as e:
+        print(f"Erro detalhado: {e}")
+        
     def _connect_buttons(self):
         _connect_menu_buttons(self.ui, self.controller)
 
@@ -238,7 +285,6 @@ class FuncScreen(QtWidgets.QWidget):
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
-        # menu_lateral - conectar botões
 
         self.novo_func = self.ui.findChild(QtWidgets.QPushButton, "pushButton")
         self.tableWidget = self.ui.findChild(QtWidgets.QTableWidget, "tableWidget")
@@ -406,7 +452,7 @@ class AgendaScreen(QtWidgets.QWidget):
         
         if self.btn_hoje:
             self.btn_hoje.clicked.connect(self.ir_para_hoje)
-
+        
         # Sincronização e Sinais
         if self.calendar_grande and self.calendar_pequeno:
             self.calendar_grande.currentPageChanged.connect(self.atualizar_label_data)
@@ -489,13 +535,19 @@ class AgendamentosScreen(QtWidgets.QWidget):
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
+        
+        # Mapeamento dos Widgets
+        self.calendar_grande = self.ui.findChild(QtWidgets.QCalendarWidget, "calendarWidget_2")
+        self.calendar_pequeno = self.ui.findChild(QtWidgets.QCalendarWidget, "calendarWidget")
+        self.label_mes_ano = self.ui.findChild(QtWidgets.QLabel, "label_2")
+        self.btn_hoje = self.ui.findChild(QtWidgets.QPushButton, "pushButton_2")
+        self.btn_agendar = self.ui.findChild(QtWidgets.QPushButton, "pushButton")
 
-        # Mapeamento de Widgets UI
         self.combo_cli = self.ui.findChild(QtWidgets.QComboBox, "comboBox_2")
         self.combo_fun = self.ui.findChild(QtWidgets.QComboBox, "comboBox")
         self.calendar = self.ui.findChild(QtWidgets.QCalendarWidget, "calendarWidget")
+        self.cancelar = self.ui.findChild(QtWidgets.QPushButton, "pushButton_4")
         
-        # Mapeamento de Radios para capturar o ID_tipo_servico do diagrama
         self.mapa_tipos = {
             self.ui.findChild(QtWidgets.QRadioButton, "radioButton"): 1,   # Ensaios
             self.ui.findChild(QtWidgets.QRadioButton, "radioButton_2"): 2, # Esquete
@@ -503,10 +555,16 @@ class AgendamentosScreen(QtWidgets.QWidget):
             self.ui.findChild(QtWidgets.QRadioButton, "radioButton_4"): 4  # Interação
         }
 
+        if self.cancelar:
+            self.cancelar.clicked.connect(lambda: self.controller.show_screen("agenda"))
+            self.cancelar.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+            
         self.btn_salvar = self.ui.findChild(QtWidgets.QPushButton, "pushButton_3")
         if self.btn_salvar:
             self.btn_salvar.clicked.connect(self.finalizar_agendamento)
 
+        self._connect_buttons()
+        
     def showEvent(self, event):
         """Atualização Automática: Recarrega combos sempre que a aba é aberta."""
         try:
@@ -524,19 +582,15 @@ class AgendamentosScreen(QtWidgets.QWidget):
         super().showEvent(event)
 
     def finalizar_agendamento(self):
-        # 1. Captura o ID do serviço baseado no RadioButton
         id_servico = 1
         for radio, id_val in self.mapa_tipos.items():
             if radio and radio.isChecked():
                 id_servico = id_val
                 break
 
-        # 2. Correção Erro 1292: Formatação correta da data para o MySQL
-        # O banco espera 'YYYY-MM-DD HH:MM:SS'
         data_selecionada = self.calendar.selectedDate().toString("yyyy-MM-dd")
         data_formatada = f"{data_selecionada} 00:00:00"
 
-        # 3. Captura IDs de chaves estrangeiras
         id_c = self.combo_cli.currentData()
         id_f = self.combo_fun.currentData()
 
@@ -545,17 +599,16 @@ class AgendamentosScreen(QtWidgets.QWidget):
             return
 
         try:
-            # Chama o DAO para salvar
             AgendamentoDAO.salvar_evento_completo(data_formatada, id_c, id_f, id_servico)
             
             QtWidgets.QMessageBox.information(self, "Sucesso", "Agendamento realizado com sucesso!")
             self.controller.show_screen("agenda")
         except Exception as e:
-            # Tratamento visual de erros técnicos para o usuário
             QtWidgets.QMessageBox.critical(self, "Erro de Banco", f"Falha ao salvar: {str(e)}")
 
     def _connect_buttons(self):
         _connect_menu_buttons(self.ui, self.controller)
+        
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()

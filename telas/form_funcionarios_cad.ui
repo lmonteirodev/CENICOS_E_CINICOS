@@ -159,7 +159,7 @@ border-radius: 14px;</string>
       <string notr="true">background-color: transparent;</string>
      </property>
      <property name="text">
-      <string>Cadastrar Novo Cliente</string>
+      <string>Cadastrar Novo Funcionário</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_2">
