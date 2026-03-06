@@ -1,5 +1,5 @@
 # ============================== IMPORTS ==========================
-from database_manager import ClienteDAO, FuncDAO
+from database_manager import ClienteDAO, FuncDAO, AgendamentoDAO
 from PyQt5 import QtWidgets, uic, QtCore, QtGui
 from PyQt5.QtCore import Qt, QDate
 import sys
@@ -390,6 +390,7 @@ class AgendaScreen(QtWidgets.QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
 
+        # Mapeamento dos Widgets
         self.calendar_grande = self.ui.findChild(QtWidgets.QCalendarWidget, "calendarWidget_2")
         self.calendar_pequeno = self.ui.findChild(QtWidgets.QCalendarWidget, "calendarWidget")
         self.label_mes_ano = self.ui.findChild(QtWidgets.QLabel, "label_2")
@@ -398,6 +399,7 @@ class AgendaScreen(QtWidgets.QWidget):
 
         self._connect_buttons()
 
+        # Configurações de Botões
         if self.btn_agendar:
             self.btn_agendar.clicked.connect(lambda: self.controller.show_screen("agendamentos"))
             self.btn_agendar.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
@@ -405,12 +407,49 @@ class AgendaScreen(QtWidgets.QWidget):
         if self.btn_hoje:
             self.btn_hoje.clicked.connect(self.ir_para_hoje)
 
+        # Sincronização e Sinais
         if self.calendar_grande and self.calendar_pequeno:
             self.calendar_grande.currentPageChanged.connect(self.atualizar_label_data)
             self.calendar_pequeno.selectionChanged.connect(self.sincronizar_para_grande)
             self.calendar_grande.selectionChanged.connect(self.sincronizar_para_pequeno)
 
+            # Inicializa o label de data
             self.atualizar_label_data(self.calendar_grande.yearShown(), self.calendar_grande.monthShown())
+
+    def showEvent(self, event):
+        """Disparado sempre que a tela fica visível. Atualiza as cores do calendário."""
+        self.atualizar_marcacoes_calendario()
+        super().showEvent(event)
+
+    def atualizar_marcacoes_calendario(self):
+        """Busca agendamentos no banco e pinta o calendário conforme o tipo de serviço."""
+        if not self.calendar_grande:
+            return
+
+        try:
+            # Chama o DAO para listar datas e tipos (sem abrir banco na Screen)
+            agendamentos = AgendamentoDAO.listar_agendamentos_calendario()
+            
+            # Limpa formatações anteriores para evitar "rastros" de cores
+            self.calendar_grande.setDateTextFormat(QtCore.QDate(), QtGui.QTextCharFormat())
+
+            for data_db, id_tipo in agendamentos:
+                # Converte datetime do banco para QDate
+                data_qdate = QtCore.QDate(data_db.year, data_db.month, data_db.day)
+                
+                # Define o estilo visual (Cores baseadas na sua legenda)
+                fmt = QtGui.QTextCharFormat()
+                fmt.setForeground(QtGui.QColor("white")) # Texto branco para melhor contraste
+                
+                if id_tipo == 1: fmt.setBackground(QtGui.QColor("#E57373"))   # Ensaios (Vermelho)
+                elif id_tipo == 2: fmt.setBackground(QtGui.QColor("#64B5F6")) # Esquete (Azul)
+                elif id_tipo == 3: fmt.setBackground(QtGui.QColor("#81C784")) # Talk-Show (Verde)
+                elif id_tipo == 4: fmt.setBackground(QtGui.QColor("#FFB74D")) # Interação (Amarelo/Laranja)
+                
+                self.calendar_grande.setDateTextFormat(data_qdate, fmt)
+                
+        except Exception as e:
+            print(f"Erro ao atualizar visual do calendário: {e}")
 
     def ir_para_hoje(self):
         hoje = QDate.currentDate()
@@ -451,17 +490,72 @@ class AgendamentosScreen(QtWidgets.QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
 
-        self.cancelar = self.ui.findChild(QtWidgets.QPushButton, "pushButton_4")
+        # Mapeamento de Widgets UI
+        self.combo_cli = self.ui.findChild(QtWidgets.QComboBox, "comboBox_2")
+        self.combo_fun = self.ui.findChild(QtWidgets.QComboBox, "comboBox")
+        self.calendar = self.ui.findChild(QtWidgets.QCalendarWidget, "calendarWidget")
+        
+        # Mapeamento de Radios para capturar o ID_tipo_servico do diagrama
+        self.mapa_tipos = {
+            self.ui.findChild(QtWidgets.QRadioButton, "radioButton"): 1,   # Ensaios
+            self.ui.findChild(QtWidgets.QRadioButton, "radioButton_2"): 2, # Esquete
+            self.ui.findChild(QtWidgets.QRadioButton, "radioButton_3"): 3, # Talk-Show
+            self.ui.findChild(QtWidgets.QRadioButton, "radioButton_4"): 4  # Interação
+        }
 
-        if self.cancelar:
-            self.cancelar.clicked.connect(lambda: self.controller.show_screen("agenda"))
-            self.cancelar.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.btn_salvar = self.ui.findChild(QtWidgets.QPushButton, "pushButton_3")
+        if self.btn_salvar:
+            self.btn_salvar.clicked.connect(self.finalizar_agendamento)
+
+    def showEvent(self, event):
+        """Atualização Automática: Recarrega combos sempre que a aba é aberta."""
+        try:
+            clientes, funcs = AgendamentoDAO.carregar_combos_interface()
             
-        self._connect_buttons()
-    
+            self.combo_cli.clear()
+            for id_c, nome in clientes:
+                self.combo_cli.addItem(nome, id_c)
+
+            self.combo_fun.clear()
+            for id_f, nome in funcs:
+                self.combo_fun.addItem(nome, id_f)
+        except Exception as e:
+            print(f"Erro ao carregar dados: {e}")
+        super().showEvent(event)
+
+    def finalizar_agendamento(self):
+        # 1. Captura o ID do serviço baseado no RadioButton
+        id_servico = 1
+        for radio, id_val in self.mapa_tipos.items():
+            if radio and radio.isChecked():
+                id_servico = id_val
+                break
+
+        # 2. Correção Erro 1292: Formatação correta da data para o MySQL
+        # O banco espera 'YYYY-MM-DD HH:MM:SS'
+        data_selecionada = self.calendar.selectedDate().toString("yyyy-MM-dd")
+        data_formatada = f"{data_selecionada} 00:00:00"
+
+        # 3. Captura IDs de chaves estrangeiras
+        id_c = self.combo_cli.currentData()
+        id_f = self.combo_fun.currentData()
+
+        if not id_c or not id_f:
+            QtWidgets.QMessageBox.warning(self, "Aviso", "Selecione um Cliente e um Participante.")
+            return
+
+        try:
+            # Chama o DAO para salvar
+            AgendamentoDAO.salvar_evento_completo(data_formatada, id_c, id_f, id_servico)
+            
+            QtWidgets.QMessageBox.information(self, "Sucesso", "Agendamento realizado com sucesso!")
+            self.controller.show_screen("agenda")
+        except Exception as e:
+            # Tratamento visual de erros técnicos para o usuário
+            QtWidgets.QMessageBox.critical(self, "Erro de Banco", f"Falha ao salvar: {str(e)}")
+
     def _connect_buttons(self):
         _connect_menu_buttons(self.ui, self.controller)
-
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()

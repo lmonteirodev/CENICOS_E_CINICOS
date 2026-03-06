@@ -483,7 +483,7 @@ color:white;</string>
     <widget class="QFrame" name="frame_resumo_cliente">
      <property name="geometry">
       <rect>
-       <x>100</x>
+       <x>280</x>
        <y>330</y>
        <width>400</width>
        <height>391</height>
@@ -636,7 +636,7 @@ font-family: &quot;Times New Roman&quot;;
     <widget class="QFrame" name="frame_resumo_agenda">
      <property name="geometry">
       <rect>
-       <x>1130</x>
+       <x>950</x>
        <y>330</y>
        <width>400</width>
        <height>391</height>
@@ -773,418 +773,120 @@ font-family: &quot;Times New Roman&quot;;
       <row/>
      </widget>
     </widget>
-    <widget class="QFrame" name="frame_resumo_pagar">
+    <widget class="QPushButton" name="btn_abrir_novo_cliente">
      <property name="geometry">
       <rect>
-       <x>620</x>
-       <y>330</y>
-       <width>400</width>
-       <height>391</height>
+       <x>1120</x>
+       <y>750</y>
+       <width>331</width>
+       <height>91</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <stylestrategy>PreferDefault</stylestrategy>
+       <family>Georgia</family>
+       <pointsize>12</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">text-align: center;
+background-color: rgb(250, 245, 255);
+border: none;
+border-radius:15px;</string>
+     </property>
+     <property name="text">
+      <string>Novo Contrato</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../Source/contrato.png</normaloff>../Source/contrato.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>30</width>
+       <height>30</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_abrir_agenda_2">
+     <property name="geometry">
+      <rect>
+       <x>650</x>
+       <y>750</y>
+       <width>331</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Georgia</family>
+       <pointsize>12</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">text-align: center;
+background-color: rgb(238, 242, 255);
+border: none;
+border-radius:15px;</string>
+     </property>
+     <property name="text">
+      <string> Agendar Horário</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../Source/relogio.png</normaloff>../Source/relogio.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>30</width>
+       <height>30</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_cadastrar_cliente">
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>750</y>
+       <width>331</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Georgia</family>
+       <pointsize>12</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
       </font>
      </property>
      <property name="layoutDirection">
       <enum>Qt::LeftToRight</enum>
      </property>
      <property name="styleSheet">
-      <string notr="true">#frame_resumo_pagar{
-	background-color:white;
-	border-radius: 30px;
-	border: 1px solid;
-	border-color: rgb(238, 238, 238);
-}
-</string>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <widget class="QLabel" name="titulo_falta_pagar">
-      <property name="geometry">
-       <rect>
-        <x>120</x>
-        <y>20</y>
-        <width>111</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Georgia</family>
-        <pointsize>12</pointsize>
-        <weight>50</weight>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 255, 255);</string>
-      </property>
-      <property name="text">
-       <string>Falta pagar</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-     <widget class="QLabel" name="icon_atencao">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>20</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Georgia</family>
-       </font>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 251, 235);
-border-radius: 10px;
-color: rgb(229, 135, 38);</string>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="pixmap">
-       <pixmap>../Source/exclamacao.png</pixmap>
-      </property>
-      <property name="scaledContents">
-       <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-      <property name="margin">
-       <number>3</number>
-      </property>
-      <property name="indent">
-       <number>-1</number>
-      </property>
-      <property name="textInteractionFlags">
-       <set>Qt::NoTextInteraction</set>
-      </property>
-     </widget>
-     <widget class="QLabel" name="titulo_atencao">
-      <property name="geometry">
-       <rect>
-        <x>270</x>
-        <y>20</y>
-        <width>101</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Georgia</family>
-        <pointsize>12</pointsize>
-        <weight>50</weight>
-        <bold>false</bold>
-        <kerning>true</kerning>
-       </font>
-      </property>
-      <property name="layoutDirection">
-       <enum>Qt::LeftToRight</enum>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: rgb(172, 74, 0);
-border: 1px solid;
-border-radius: 5px;
-border-color: rgb(230, 223, 172);</string>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::Box</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-      <property name="text">
-       <string>ATENÇÃO</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-     <widget class="QTableWidget" name="tableWidget_2">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>81</y>
-        <width>321</width>
-        <height>271</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: white;
+      <string notr="true">text-align: left;
+background-color: rgb(236, 253, 245);
 border: none;
-font-family: &quot;Times New Roman&quot;;
-</string>
-      </property>
-      <property name="rowCount">
-       <number>3</number>
-      </property>
-      <attribute name="horizontalHeaderVisible">
-       <bool>false</bool>
-      </attribute>
-      <attribute name="verticalHeaderVisible">
-       <bool>false</bool>
-      </attribute>
-      <row/>
-      <row/>
-      <row/>
-     </widget>
+border-radius:15px;</string>
+     </property>
+     <property name="text">
+      <string>Cadastrar Cliente</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../Source/adicionar_cliente.png</normaloff>../Source/adicionar_cliente.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>100</width>
+       <height>100</height>
+      </size>
+     </property>
     </widget>
-    <widget class="QFrame" name="cadastrar_cliente">
-     <property name="geometry">
-      <rect>
-       <x>100</x>
-       <y>760</y>
-       <width>331</width>
-       <height>91</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color:white;
-border-radius: 30px;</string>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <widget class="QPushButton" name="btn_cadastrar_cliente">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>331</width>
-        <height>91</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Georgia</family>
-        <pointsize>12</pointsize>
-        <weight>50</weight>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="layoutDirection">
-       <enum>Qt::LeftToRight</enum>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">text-align: left;
-background-color: rgb(236, 253, 245);</string>
-      </property>
-      <property name="text">
-       <string>Cadastrar Cliente</string>
-      </property>
-      <property name="icon">
-       <iconset>
-        <normaloff>../Source/adicionar_cliente.png</normaloff>../Source/adicionar_cliente.png</iconset>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>100</width>
-        <height>100</height>
-       </size>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QFrame" name="frame_registrar_agenda">
-     <property name="geometry">
-      <rect>
-       <x>470</x>
-       <y>760</y>
-       <width>331</width>
-       <height>91</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color:white;
-border-radius: 30px;</string>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <widget class="QPushButton" name="btn_abrir_agenda_2">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>331</width>
-        <height>91</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Georgia</family>
-        <pointsize>12</pointsize>
-        <weight>50</weight>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">text-align: center;
-background-color: rgb(238, 242, 255);</string>
-      </property>
-      <property name="text">
-       <string> Agendar Horário</string>
-      </property>
-      <property name="icon">
-       <iconset>
-        <normaloff>../Source/relogio.png</normaloff>../Source/relogio.png</iconset>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>30</width>
-        <height>30</height>
-       </size>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QFrame" name="frame_novo_service">
-     <property name="geometry">
-      <rect>
-       <x>830</x>
-       <y>760</y>
-       <width>331</width>
-       <height>91</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color:white;
-border-radius: 30px;</string>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <widget class="QPushButton" name="btn_abrir_novo_cliente">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>331</width>
-        <height>91</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Georgia</family>
-        <pointsize>12</pointsize>
-        <weight>50</weight>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">text-align: center;
-background-color: rgb(250, 245, 255);</string>
-      </property>
-      <property name="text">
-       <string>Novo Contrato</string>
-      </property>
-      <property name="icon">
-       <iconset>
-        <normaloff>../Source/contrato.png</normaloff>../Source/contrato.png</iconset>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>30</width>
-        <height>30</height>
-       </size>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QFrame" name="frame_pagar_conta">
-     <property name="geometry">
-      <rect>
-       <x>1200</x>
-       <y>760</y>
-       <width>331</width>
-       <height>91</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color:white;
-border-radius: 30px;</string>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <widget class="QPushButton" name="btn_abrir_documentos">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>331</width>
-        <height>91</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Georgia</family>
-        <pointsize>12</pointsize>
-        <weight>50</weight>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">text-align: center;
-background-color: rgb(255, 247, 237);</string>
-      </property>
-      <property name="text">
-       <string>Conciliar Pagos</string>
-      </property>
-      <property name="icon">
-       <iconset>
-        <normaloff>../Source/consolidar.png</normaloff>../Source/consolidar.png</iconset>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>40</width>
-        <height>40</height>
-       </size>
-      </property>
-     </widget>
-    </widget>
-    <zorder>main_dashboard_frame</zorder>
-    <zorder>frame_resumo_cliente</zorder>
-    <zorder>frame_resumo_agenda</zorder>
-    <zorder>cadastrar_cliente</zorder>
-    <zorder>frame_registrar_agenda</zorder>
-    <zorder>frame_novo_service</zorder>
-    <zorder>frame_pagar_conta</zorder>
-    <zorder>frame_resumo_pagar</zorder>
    </widget>
   </widget>
  </widget>

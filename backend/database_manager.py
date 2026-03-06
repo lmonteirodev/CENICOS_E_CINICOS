@@ -117,3 +117,80 @@ class FuncDAO:
             finally:
                 cursor.close()
                 conexao.close()
+
+from database import get_connection
+
+class AgendamentoDAO:
+    @staticmethod
+    def carregar_combos_interface():
+        """Busca dados para os comboboxes sem expor a conexão à interface."""
+        conexao = get_connection()
+        cursor = conexao.cursor()
+        try:
+            # Busca Clientes
+            cursor.execute("SELECT ID_cliente, nome FROM cliente ORDER BY nome")
+            clientes = cursor.fetchall()
+            
+            # Busca Funcionários
+            cursor.execute("SELECT ID_funcionario, nome FROM funcionario ORDER BY nome")
+            funcs = cursor.fetchall()
+            
+            return clientes, funcs
+        finally:
+            cursor.close()
+            conexao.close()
+
+    @staticmethod
+    def salvar_evento_completo(data_formatada, id_cli, id_fun, id_tipo_servico):
+        """
+        Realiza a transação respeitando as chaves estrangeiras do diagrama técnico.
+        """
+        conexao = get_connection()
+        cursor = conexao.cursor()
+        try:
+            # 1. Inserção na tabela 'servico' (Obrigatória antes da agenda)
+            # Resolve o Erro 1452 garantindo que id_tipo_servico exista
+            cursor.execute("""
+                INSERT INTO servico (status_servico, data_servico, ID_funcionario, ID_tipo_servico) 
+                VALUES (%s, %s, %s, %s)
+            """, ("AGENDADO", data_formatada, id_fun, id_tipo_servico))
+            
+            id_servico_gerado = cursor.lastrowid
+
+            # 2. Inserção na tabela 'agenda'
+            # Correção Erro 1054: Removido ID_perfil (não existe nesta tabela no diagrama)
+            sql_agenda = """
+                INSERT INTO agenda (data_select, horario_inicio, horario_fim, 
+                                   ID_servico, ID_funcionario, ID_cliente)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """
+            # Horários padrão para evitar erro de campo vazio
+            cursor.execute(sql_agenda, (data_formatada, "08:00:00", "18:00:00", 
+                                        id_servico_gerado, id_fun, id_cli))
+            
+            conexao.commit()
+            return True
+        except Exception as e:
+            conexao.rollback()
+            raise e
+        finally:
+            cursor.close()
+            conexao.close()
+    
+    @staticmethod
+    def listar_agendamentos_calendario():
+        """Busca todos os eventos para exibir no calendário principal"""
+        conexao = get_connection()
+        cursor = conexao.cursor()
+        try:
+            # Seleciona a data e o tipo de serviço (para saber a cor)
+            sql = """
+                SELECT a.data_select, s.ID_tipo_servico 
+                FROM agenda a
+                JOIN servico s ON a.ID_servico = s.ID_servico
+            """
+            cursor.execute(sql)
+            return cursor.fetchall() # Retorna algo como [(datetime, 1), (datetime, 2)]
+        finally:
+            cursor.close()
+            conexao.close()
