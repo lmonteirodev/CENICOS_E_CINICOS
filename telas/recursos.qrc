@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="/icones">
+    <file>seta_direita.png</file>
+    <file>seta_esquerda.png</file>
+    <file>seta_baixo.png</file>
+  </qresource>
+</RCC>

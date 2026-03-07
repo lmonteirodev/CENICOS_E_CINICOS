@@ -23,7 +23,8 @@
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">background-color: rgb(255,255,255);</string>
+    <string notr="true">background-color: rgb(255,255,255);
+border: white;</string>
    </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
@@ -51,7 +52,7 @@ color:rgb(29, 41, 61);</string>
      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt; font-weight:600;&quot;&gt;Agenda&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
@@ -66,7 +67,8 @@ p, li { white-space: pre-wrap; }
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">background-color: rgb(247, 247, 247);</string>
+    <string notr="true">background-color: rgb(247, 247, 247);
+border:none;</string>
    </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
@@ -92,11 +94,15 @@ p, li { white-space: pre-wrap; }
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color:rgb(202,68,69);
+     <string notr="true">QPushButton{
+background-color:rgb(202,68,69);
 border-radius:17px;
 color: white;
 text-align:center;
-</string>
+}
+QPushButton:hover{
+background-color:rgb(182, 75, 75);
+}</string>
     </property>
     <property name="text">
      <string>Novo Agendamento</string>
@@ -139,13 +145,22 @@ text-align:center;
      <string/>
     </property>
     <property name="styleSheet">
-     <string notr="true">QCalendarWidget QAbstractItemView{background-color: white;
+     <string notr="true">/* 1. Fundo geral do calendário */
+QCalendarWidget QWidget { 
+    background-color: white;
 }
-QCalendarWidget QToolButton{background-color: transparent; color: rgb(0, 0, 0); hight: 10px;
+
+/* 2. Estilo da grade de dias (Base) */
+QCalendarWidget QAbstractItemView {
+    background-color: white;
+    selection-background-color: rgb(156, 10, 18); /* Cor de seleção */
+    selection-color: white;
 }
-QCalendarWidget QAbstractItemView:item:selected{background-color:rgb(156, 10, 18); border-radius: 5px; color: white;
-}
-QCalendarWidget QWidget{ background-color: white;
+
+/* 4. Estilo dos botões do topo */
+QCalendarWidget QToolButton {
+    background-color: transparent;
+    color: black;
 }
 </string>
     </property>
@@ -157,7 +172,7 @@ QCalendarWidget QWidget{ background-color: white;
      </date>
     </property>
     <property name="gridVisible">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
     <property name="selectionMode">
      <enum>QCalendarWidget::SingleSelection</enum>
@@ -190,13 +205,38 @@ QCalendarWidget QWidget{ background-color: white;
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">QCalendarWidget QAbstractItemView{background-color: white;
+     <string notr="true">/* 1. Fundo geral do calendário */
+QCalendarWidget QWidget { 
+    background-color: white;
 }
-QCalendarWidget QToolButton{background-color: transparent; color: rgb(0, 0, 0); ;
+
+/* 2. Estilo da grade de dias (Base) */
+QCalendarWidget QAbstractItemView {
+    background-color: white;
+    selection-background-color: rgb(156, 10, 18); /* Cor de seleção */
+    selection-color: white;
 }
-QCalendarWidget QAbstractItemView:item:selected{background-color:rgb(156, 10, 18); border-radius: 5px; color: white;
+
+/* 3. Efeito de HOVER nos dias */
+/* Nota: Usamos o ID específico da tabela para garantir que o hover funcione */
+#qt_calendar_calendarview:item:hover {
+    background-color: rgba(156, 10, 18, 40);
+    color: black;
+    border-radius: 5px;
 }
-QCalendarWidget QWidget{ background-color: white;
+
+/* 4. Estilo dos botões do topo */
+QCalendarWidget QToolButton {
+    background-color: transparent;
+    color: black;
+}
+
+/* 5. Customização das Setas */
+#qt_calendar_prevmonth {
+    qproperty-icon: url(:/icones/seta_esquerda.png);
+}
+#qt_calendar_nextmonth {
+    qproperty-icon: url(:/icones/seta_direita.png);
 }</string>
     </property>
     <property name="gridVisible">
@@ -548,10 +588,15 @@ border-radius: 10px;</string>
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color:rgb(202,68,69);
+      <string notr="true">QPushButton{
+background-color:rgb(202,68,69);
 border-radius:10px;
 color: white;
-text-align:center;</string>
+text-align:center;
+}
+QPushButton:hover{
+background-color:rgb(182, 75, 75);
+}</string>
      </property>
      <property name="text">
       <string>Hoje</string>
@@ -575,9 +620,7 @@ text-align:center;</string>
    </property>
    <property name="styleSheet">
     <string notr="true">background-color: rgb(255,255,255);
-border: 1px;
-box-shadow: 5px 5px 5px;
-border-color:  rgb(149, 149, 149);</string>
+border: white;</string>
    </property>
    <widget class="QPushButton" name="btn_abrir_dashboard_menu">
     <property name="geometry">
@@ -585,7 +628,7 @@ border-color:  rgb(149, 149, 149);</string>
       <x>20</x>
       <y>200</y>
       <width>261</width>
-      <height>61</height>
+      <height>82</height>
      </rect>
     </property>
     <property name="font">
@@ -603,13 +646,24 @@ border-color:  rgb(149, 149, 149);</string>
      <enum>Qt::LeftToRight</enum>
     </property>
     <property name="styleSheet">
-     <string notr="true">text-align: left;
-color: rgb(139, 139, 139);
-padding-left: 10px;
-border-radius:10px;
-hover-color {
-	background-color:rgb(254, 242, 242 solid);
-	color:rgb(159, 7, 18);
+     <string notr="true">
+QPushButton {
+	text-align: left;
+	padding: 20px;
+    min-height: 40px;
+    background-color: white;
+    color:  rgb(139, 139, 139);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: rgb(247, 247, 247);
+	color: rgb(139, 139, 139);
+}
+
+QPushButton:pressed {
+    background-color: rgb(182, 75, 75);
+	color: white;
 }</string>
     </property>
     <property name="text">
@@ -617,7 +671,7 @@ hover-color {
     </property>
     <property name="icon">
      <iconset>
-      <normaloff>../Source/dashboard.png</normaloff>../Source/dashboard.png</iconset>
+      <normaloff>../Source/dashboard.svg</normaloff>../Source/dashboard.svg</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -632,7 +686,7 @@ hover-color {
       <x>20</x>
       <y>300</y>
       <width>261</width>
-      <height>61</height>
+      <height>80</height>
      </rect>
     </property>
     <property name="font">
@@ -647,13 +701,22 @@ hover-color {
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="styleSheet">
-     <string notr="true">text-align: left;
-color: rgb(139, 139, 139);
-padding-left: 10px;
-border-radius:10px;
-hover-color {
-	background-color:rgb(254, 242, 242 solid);
-	color:rgb(159, 7, 18);
+     <string notr="true">QPushButton {
+    text-align: left;
+    padding-left: 20px;
+    min-height: 42px;
+    background-color: white;
+    color: rgb(139,139,139);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: rgb(247,247,247);
+}
+
+QPushButton:pressed {
+    background-color: rgb(182,75,75);
+    color: white;
 }</string>
     </property>
     <property name="text">
@@ -661,7 +724,7 @@ hover-color {
     </property>
     <property name="icon">
      <iconset>
-      <normaloff>../Source/cliente.png</normaloff>../Source/cliente.png</iconset>
+      <normaloff>../Source/clientes.svg</normaloff>../Source/clientes.svg</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -676,7 +739,7 @@ hover-color {
       <x>20</x>
       <y>400</y>
       <width>261</width>
-      <height>61</height>
+      <height>80</height>
      </rect>
     </property>
     <property name="font">
@@ -691,13 +754,22 @@ hover-color {
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="styleSheet">
-     <string notr="true">text-align: left;
-color: rgb(139, 139, 139);
-padding-left: 10px;
-border-radius:10px;
-hover-color {
-	background-color:rgb(254, 242, 242 solid);
-	color:rgb(159, 7, 18);
+     <string notr="true">QPushButton {
+    text-align: left;
+    padding-left: 20px;
+    min-height: 42px;
+    background-color: white;
+    color: rgb(139,139,139);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: rgb(247,247,247);
+}
+
+QPushButton:pressed {
+    background-color: rgb(182,75,75);
+    color: white;
 }</string>
     </property>
     <property name="text">
@@ -705,7 +777,7 @@ hover-color {
     </property>
     <property name="icon">
      <iconset>
-      <normaloff>../Source/funcionarios.png</normaloff>../Source/funcionarios.png</iconset>
+      <normaloff>../Source/funcionarios.svg</normaloff>../Source/funcionarios.svg</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -720,7 +792,7 @@ hover-color {
       <x>20</x>
       <y>500</y>
       <width>261</width>
-      <height>61</height>
+      <height>82</height>
      </rect>
     </property>
     <property name="font">
@@ -735,21 +807,22 @@ hover-color {
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="styleSheet">
-     <string notr="true">text-align: left;
-color: rgb(139, 139, 139);
-padding-left: 10px;
-border-radius:10px;
-hover-color {
-	background-color:rgb(254, 242, 242 solid);
-	color:rgb(159, 7, 18);
-}</string>
+     <string notr="true">QPushButton {
+	text-align: left;
+	padding: 20px;
+    min-height: 42px;
+    background-color: rgb(254, 242, 242);
+    color:  rgb(159, 7, 18);
+    border-radius: 10px;
+}
+</string>
     </property>
     <property name="text">
      <string>Agenda</string>
     </property>
     <property name="icon">
      <iconset>
-      <normaloff>../Source/agenda.png</normaloff>../Source/agenda.png</iconset>
+      <normaloff>../Source/agenda.svg</normaloff>../Source/agenda.svg</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -764,7 +837,7 @@ hover-color {
       <x>20</x>
       <y>600</y>
       <width>261</width>
-      <height>61</height>
+      <height>80</height>
      </rect>
     </property>
     <property name="font">
@@ -779,13 +852,22 @@ hover-color {
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="styleSheet">
-     <string notr="true">text-align: left;
-color: rgb(139, 139, 139);
-padding-left: 10px;
-border-radius:10px;
-hover-color {
-	background-color:rgb(254, 242, 242 solid);
-	color:rgb(159, 7, 18);
+     <string notr="true">QPushButton {
+	text-align: left;
+	padding: 20px;
+    background-color: white;
+    color:  rgb(139, 139, 139);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: rgb(247, 247, 247);
+	color: rgb(139, 139, 139);
+}
+
+QPushButton:pressed {
+    background-color: rgb(182, 75, 75);
+	color: white;
 }</string>
     </property>
     <property name="text">
@@ -793,7 +875,7 @@ hover-color {
     </property>
     <property name="icon">
      <iconset>
-      <normaloff>../Source/documentos.png</normaloff>../Source/documentos.png</iconset>
+      <normaloff>../Source/documentos.svg</normaloff>../Source/documentos.svg</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -822,7 +904,12 @@ hover-color {
     </property>
    </widget>
   </widget>
+  <zorder>frame_3</zorder>
+  <zorder>menu_lateral</zorder>
+  <zorder>frame_2</zorder>
  </widget>
- <resources/>
+ <resources>
+  <include location="recursos.qrc"/>
+ </resources>
  <connections/>
 </ui>

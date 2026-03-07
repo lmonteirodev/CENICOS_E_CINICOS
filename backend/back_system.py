@@ -108,33 +108,33 @@ class ClienteScreen(QtWidgets.QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
         
-        self.novo_cliente = self.ui.findChild(QtWidgets.QPushButton, "pushButton")
+        self.novo_cliente = self.ui.findChild(QtWidgets.QPushButton, "pushButton_6")
         self.tableWidget = self.ui.findChild(QtWidgets.QTableWidget, "tableWidget")
         
-        #======================== Botões de Filtro =========================
-        # BOTÕES DE FILTRO
-        self.btn_todos = self.ui.findChild(QtWidgets.QPushButton, "btn_filtro_todos_cliente")
-        self.btn_ativos = self.ui.findChild(QtWidgets.QPushButton, "btn_filtro_ativos_cliente")
-        self.btn_inativos = self.ui.findChild(QtWidgets.QPushButton, "btn_filtro_inativos_cliente")
-        self.btn_filtrar = self.ui.findChild(QtWidgets.QPushButton, "btn_filtro_cliente")
+        # #======================== Botões de Filtro =========================
+        # # BOTÕES DE FILTRO
+        # self.btn_todos = self.ui.findChild(QtWidgets.QPushButton, "btn_filtro_todos_cliente")
+        # self.btn_ativos = self.ui.findChild(QtWidgets.QPushButton, "btn_filtro_ativos_cliente")
+        # self.btn_inativos = self.ui.findChild(QtWidgets.QPushButton, "btn_filtro_inativos_cliente")
+        # self.btn_filtrar = self.ui.findChild(QtWidgets.QPushButton, "btn_filtro_cliente")
 
-        # GRUPO DE FILTRO
-        self.grupo_filtro = QButtonGroup()
+        # # GRUPO DE FILTRO
+        # self.grupo_filtro = QButtonGroup()
 
-        self.grupo_filtro.addButton(self.btn_todos)
-        self.grupo_filtro.addButton(self.btn_ativos)
-        self.grupo_filtro.addButton(self.btn_inativos)
+        # self.grupo_filtro.addButton(self.btn_todos)
+        # self.grupo_filtro.addButton(self.btn_ativos)
+        # self.grupo_filtro.addButton(self.btn_inativos)
 
-        # tornar os botões selecionáveis
-        self.btn_todos.setCheckable(True)
-        self.btn_ativos.setCheckable(True)
-        self.btn_inativos.setCheckable(True)
+        # # tornar os botões selecionáveis
+        # self.btn_todos.setCheckable(True)
+        # self.btn_ativos.setCheckable(True)
+        # self.btn_inativos.setCheckable(True)
 
-        self.btn_todos.setChecked(True)
+        # self.btn_todos.setChecked(True)
 
-        # conectar botão de filtro
-        if self.btn_filtrar:
-            self.btn_filtrar.clicked.connect(self.aplicar_filtro)
+        # # conectar botão de filtro
+        # if self.btn_filtrar:
+        #     self.btn_filtrar.clicked.connect(self.aplicar_filtro)
         
         self._connect_buttons()
 
@@ -165,9 +165,7 @@ class ClienteScreen(QtWidgets.QWidget):
         self.tableWidget.setColumnWidth(4, 100) # Qtd Serviços
         self.tableWidget.setShowGrid(False)
 
-    def carregar_clientes(self,filtro="todos"):
-        
-            
+    def carregar_clientes(self):       
         try:
             clientes = ClienteDAO.carregar_clientes()
             self.tableWidget.setRowCount(len(clientes))
@@ -192,29 +190,29 @@ class ClienteScreen(QtWidgets.QWidget):
                 self.tableWidget.setItem(i, 3, item_status)
                 self.tableWidget.setItem(i, 4, item_servicos)
 
-                self.tableWidget.setRowHeight(i, 60)
-                
+                self.tableWidget.setRowHeight(i, 60)       
         except Exception as e:
             print(f"Erro detalhado: {e}")
             QtWidgets.QMessageBox.critical(self, "Erro", f"Erro ao carregar clientes: {e}")
-        if filtro == "ativos":
-            clientes = [c for c in clientes if c[3] == "ativos"]
-        elif filtro == "inativos":    
-            clientes = [c for c in clientes if c[3] == "inativos"]
+
+        # if filtro == "ativos":
+        #     clientes = [c for c in clientes if c[3] == "ativos"]
+        # elif filtro == "inativos":    
+        #     clientes = [c for c in clientes if c[3] == "inativos"]
             
-        self.tableWidget.setRowCount(len(clientes))
-    try:       
-        def aplicar_filtro(self):
+        # self.tableWidget.setRowCount(len(clientes))
+    # try:       
+    #     def aplicar_filtro(self):
 
-            if self.btn_todos.isChecked():
-                self.carregar_clientes("todos")
-            elif self.btn_ativos.isChecked():
-                self.carregar_clientes("ativos")
-            elif self.btn_inativos.isChecked():
-                self.carregar_clientes("inativos")
+    #         if self.btn_todos.isChecked():
+    #             self.carregar_clientes("todos")
+    #         elif self.btn_ativos.isChecked():
+    #             self.carregar_clientes("ativos")
+    #         elif self.btn_inativos.isChecked():
+    #             self.carregar_clientes("inativos")
 
-    except Exception as e:
-        print(f"Erro detalhado: {e}")
+    # except Exception as e:
+    #     print(f"Erro detalhado: {e}")
         
     def _connect_buttons(self):
         _connect_menu_buttons(self.ui, self.controller)
@@ -236,7 +234,7 @@ class ClientesCadScreen(QtWidgets.QWidget):
         
         self._connect_buttons()
 
-        btn_voltar = self.ui.findChild(QtWidgets.QPushButton, "pushButton_2")
+        btn_voltar = self.ui.findChild(QtWidgets.QPushButton, "pushButton_5")
         btn_cancelar = self.ui.findChild(QtWidgets.QPushButton, "pushButton_4")
         
         btn_salvar = self.ui.findChild(QtWidgets.QPushButton, "pushButton_3")
@@ -527,6 +525,7 @@ class AgendaScreen(QtWidgets.QWidget):
     def _connect_buttons(self):
         _connect_menu_buttons(self.ui, self.controller)
 
+
 class AgendamentosScreen(QtWidgets.QWidget):
     def __init__(self, controller):
         super().__init__()
@@ -650,7 +649,12 @@ class MainWindow(QtWidgets.QMainWindow):
             print(f"Erro: Tela '{nome}' não encontrada no mapeamento.")
 
 # ======================== TESTE DE TELAS ========================= 
-app = QtWidgets.QApplication(sys.argv)
-window = MainWindow()
-window.showMaximized()
-sys.exit(app.exec_())
+try:    
+    if __name__ == "__main__":
+        app = QtWidgets.QApplication(sys.argv)
+        app.setStyle("Fusion")
+        window = MainWindow()
+        window.showMaximized()
+        sys.exit(app.exec_())
+except Exception as e:
+    print(f"Erro detalhado: {e}")
