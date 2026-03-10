@@ -4,6 +4,36 @@ from PyQt5 import QtWidgets, uic, QtCore, QtGui
 from PyQt5.QtCore import Qt, QDate
 from PyQt5.QtWidgets import QButtonGroup
 import sys
+import os.path
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+
+#================================= API ============================
+
+# Escopo para leitura e escrita no Drive
+SCOPES = ['https://www.googleapis.com/auth/drive']
+
+def obter_credenciais():
+    creds = None
+    # O arquivo token.json armazena o acesso do usuário
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    
+    # Se não houver credenciais válidas, peça ao usuário para logar
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            # Aqui ele lê o arquivo que você baixou do Google
+            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+        
+        # Salva as credenciais para a próxima vez
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
+    
+    return creds
 
 # ======================== FUNÇÃO MESTRA ==========================
 def _connect_menu_buttons(ui, controller):
@@ -410,6 +440,9 @@ class FuncCadScreen(QtWidgets.QWidget):
     def _connect_buttons(self):
         _connect_menu_buttons(self.ui, self.controller)
 
+import os
+import subprocess
+
 class DocScreen(QtWidgets.QWidget):
     def __init__(self, controller):
         super().__init__()
@@ -418,9 +451,83 @@ class DocScreen(QtWidgets.QWidget):
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
-        # menu_lateral - conectar botões
+
+        # 1. Configurações da Pasta (Ajuste para o seu caminho do Drive)
+        self.caminho_drive = r"G:\Meu Drive\Sistema_Arquivos" 
+        
+        # Criar a pasta se ela não existir
+        if not os.path.exists(self.caminho_drive):
+            try:
+                os.makedirs(self.caminho_drive)
+            except:
+                print("Aviso: Unidade G: não encontrada. Verifique o Google Drive.")
+
+        # 2. Mapear Widgets
+        self.tableWidget = self.ui.findChild(QtWidgets.QTableWidget, "tableWidget")
+        self.btn_upload = self.ui.findChild(QtWidgets.QPushButton, "pushButton_7") # Crie este botão no UI
+
+        # 3. Conectar Sinais
         self._connect_buttons()
-    
+        if self.btn_upload:
+            self.btn_upload.clicked.connect(self.fazer_upload_local)
+        
+        # Configurar Tabela
+        if self.tableWidget:
+            self.configurar_tabela()
+            self.listar_arquivos()
+
+    def configurar_tabela(self):
+        self.tableWidget.setColumnCount(3)
+        self.tableWidget.setHorizontalHeaderLabels(["Arquivo", "Última Modificação", "Ação"])
+        header = self.tableWidget.horizontalHeader()
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+        self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+
+    def listar_arquivos(self):
+        """Lê a pasta do Drive e preenche a tabela"""
+        if not os.path.exists(self.caminho_drive):
+            return
+
+        arquivos = os.listdir(self.caminho_drive)
+        self.tableWidget.setRowCount(len(arquivos))
+
+        for i, nome in enumerate(arquivos):
+            caminho_completo = os.path.join(self.caminho_drive, nome)
+            
+            # Info do arquivo
+            stats = os.stat(caminho_completo)
+            data_mod = QDate.fromJulianDay(int(stats.st_mtime / 86400) + 2440588).toString("dd/MM/yyyy")
+
+            self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(nome))
+            self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(data_mod))
+
+            # Botão para Abrir
+            btn_abrir = QtWidgets.QPushButton("Visualizar")
+            btn_abrir.clicked.connect(lambda ch, p=caminho_completo: self.abrir_arquivo(p))
+            self.tableWidget.setCellWidget(i, 2, btn_abrir)
+
+    def abrir_arquivo(self, caminho):
+        """Abre o arquivo no visualizador padrão do Windows"""
+        try:
+            os.startfile(caminho) # Comando nativo do Windows
+        except Exception as e:
+            QtWidgets.QMessageBox.warning(self, "Erro", f"Não foi possível abrir: {e}")
+
+    def fazer_upload_local(self):
+        """Simula upload apenas movendo o arquivo para a pasta do Drive"""
+        files, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "Selecionar Arquivos para Upload")
+        
+        if files:
+            import shutil
+            for f in files:
+                nome_arquivo = os.path.basename(f)
+                destino = os.path.join(self.caminho_drive, nome_arquivo)
+                shutil.copy2(f, destino) # Copia para a pasta do Drive
+            
+            self.listar_arquivos() # Atualiza a tabela
+            QtWidgets.QMessageBox.information(self, "Sucesso", "Arquivos sincronizados com o Drive!")
+
     def _connect_buttons(self):
         _connect_menu_buttons(self.ui, self.controller)
 
@@ -524,7 +631,6 @@ class AgendaScreen(QtWidgets.QWidget):
 
     def _connect_buttons(self):
         _connect_menu_buttons(self.ui, self.controller)
-
 
 class AgendamentosScreen(QtWidgets.QWidget):
     def __init__(self, controller):

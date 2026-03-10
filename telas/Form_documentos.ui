@@ -39,217 +39,11 @@ border: none;</string>
    <property name="frameShadow">
     <enum>QFrame::Raised</enum>
    </property>
-   <widget class="QFrame" name="frame_6">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>120</y>
-      <width>1461</width>
-      <height>761</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color:white;
-border-radius: 30px;</string>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
-    </property>
-    <widget class="QPushButton" name="pushButton_3">
-     <property name="geometry">
-      <rect>
-       <x>30</x>
-       <y>20</y>
-       <width>71</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="cursor">
-      <cursorShape>PointingHandCursor</cursorShape>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(246, 246, 246);
-border-radius: 14px;</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../Source/lupa.png</normaloff>../Source/lupa.png</iconset>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="lineEdit">
-     <property name="geometry">
-      <rect>
-       <x>80</x>
-       <y>20</y>
-       <width>631</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Georgia</family>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(246, 246, 246);
-border-radius: 14px;</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="placeholderText">
-      <string>Buscar por nome do Arquivo ou Proprietário...</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_5">
-     <property name="geometry">
-      <rect>
-       <x>1140</x>
-       <y>20</y>
-       <width>171</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Georgia</family>
-       <pointsize>10</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
-      </font>
-     </property>
-     <property name="cursor">
-      <cursorShape>PointingHandCursor</cursorShape>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::RightToLeft</enum>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(246, 246, 246);
-border-radius: 14px;</string>
-     </property>
-     <property name="text">
-      <string>Todos os Meses</string>
-     </property>
-     <property name="shortcut">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_6">
-     <property name="geometry">
-      <rect>
-       <x>1320</x>
-       <y>20</y>
-       <width>71</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="cursor">
-      <cursorShape>PointingHandCursor</cursorShape>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(246, 246, 246);
-border-radius: 14px;</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../Source/filtro.png</normaloff>../Source/filtro.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>20</width>
-       <height>20</height>
-      </size>
-     </property>
-    </widget>
-    <widget class="QTableView" name="tableView">
-     <property name="geometry">
-      <rect>
-       <x>50</x>
-       <y>110</y>
-       <width>351</width>
-       <height>101</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QComboBox" name="comboBox">
-     <property name="geometry">
-      <rect>
-       <x>960</x>
-       <y>20</y>
-       <width>171</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Georgia</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="cursor">
-      <cursorShape>PointingHandCursor</cursorShape>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
-     </property>
-     <property name="autoFillBackground">
-      <bool>false</bool>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QComboBox {
-    background-color: #EDEDED;
-    border: 1px solid rgb(246, 246, 246);
-    border-radius: 18px;
-    padding: 6px 12px;
-	qproperty-alignment: AlignCenter;
-}
-
-QComboBox::drop-down {
-    border: none;
-    width: 25px;
-}
-</string>
-     </property>
-     <property name="editable">
-      <bool>false</bool>
-     </property>
-     <property name="currentText">
-      <string>Todos os Anos</string>
-     </property>
-     <property name="currentIndex">
-      <number>0</number>
-     </property>
-     <property name="insertPolicy">
-      <enum>QComboBox::InsertAtCurrent</enum>
-     </property>
-     <property name="sizeAdjustPolicy">
-      <enum>QComboBox::AdjustToMinimumContentsLength</enum>
-     </property>
-     <property name="frame">
-      <bool>true</bool>
-     </property>
-     <item>
-      <property name="text">
-       <string>Todos os Anos</string>
-      </property>
-     </item>
-    </widget>
-   </widget>
    <widget class="QPushButton" name="pushButton_7">
     <property name="geometry">
      <rect>
       <x>1280</x>
-      <y>30</y>
+      <y>60</y>
       <width>211</width>
       <height>61</height>
      </rect>
@@ -263,8 +57,21 @@ QComboBox::drop-down {
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: white;
-border-radius: 14px;</string>
+     <string notr="true">QPushButton {
+    text-align: center;
+    background-color: white;
+    color: rgb(139,139,139);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: rgb(247,247,247);
+}
+
+QPushButton:pressed {
+    background-color: rgb(182,75,75);
+    color: white;
+}</string>
     </property>
     <property name="text">
      <string>Anexar Documentos</string>
@@ -283,10 +90,10 @@ border-radius: 14px;</string>
    <widget class="QFrame" name="frame_4">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>30</y>
-      <width>511</width>
-      <height>61</height>
+      <x>40</x>
+      <y>20</y>
+      <width>551</width>
+      <height>71</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -304,8 +111,8 @@ border-radius: 14px;</string>
       <rect>
        <x>190</x>
        <y>11</y>
-       <width>131</width>
-       <height>41</height>
+       <width>171</width>
+       <height>51</height>
       </rect>
      </property>
      <property name="font">
@@ -318,6 +125,23 @@ border-radius: 14px;</string>
      </property>
      <property name="cursor">
       <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    text-align: center;
+    background-color: white;
+    color: rgb(139,139,139);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: rgb(247,247,247);
+}
+
+QPushButton:pressed {
+    background-color: rgb(182,75,75);
+    color: white;
+}</string>
      </property>
      <property name="text">
       <string>Funcionários</string>
@@ -336,10 +160,10 @@ border-radius: 14px;</string>
     <widget class="QPushButton" name="pushButton">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>10</x>
        <y>11</y>
-       <width>111</width>
-       <height>41</height>
+       <width>171</width>
+       <height>51</height>
       </rect>
      </property>
      <property name="font">
@@ -352,6 +176,14 @@ border-radius: 14px;</string>
      </property>
      <property name="cursor">
       <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	text-align: center;
+    background-color: rgb(182,75,75);
+    color:  white;
+    border-radius: 10px;
+}</string>
      </property>
      <property name="text">
       <string>Clientes</string>
@@ -370,10 +202,10 @@ border-radius: 14px;</string>
     <widget class="QPushButton" name="pushButton_8">
      <property name="geometry">
       <rect>
-       <x>390</x>
+       <x>370</x>
        <y>10</y>
-       <width>101</width>
-       <height>41</height>
+       <width>171</width>
+       <height>51</height>
       </rect>
      </property>
      <property name="font">
@@ -390,6 +222,23 @@ border-radius: 14px;</string>
      <property name="autoFillBackground">
       <bool>false</bool>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    text-align: center;
+    background-color: white;
+    color: rgb(139,139,139);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: rgb(247,247,247);
+}
+
+QPushButton:pressed {
+    background-color: rgb(182,75,75);
+    color: white;
+}</string>
+     </property>
      <property name="text">
       <string>Fiscais</string>
      </property>
@@ -404,6 +253,138 @@ border-radius: 14px;</string>
       </size>
      </property>
     </widget>
+   </widget>
+   <widget class="QTableWidget" name="tableWidget">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>200</y>
+      <width>1511</width>
+      <height>541</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Georgia</family>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QHeaderView::section {
+	font-family: &quot;MS Shell Dlg 2&quot;;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: rgb(103, 43, 43);
+    color: white;
+    border: none;
+	padding: 8px;
+}
+QHeaderView::section:first {
+	border-top-left-radius: 20px;  /* Canto superior esquerdo */
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+QHeaderView::section:last {
+	border-top-left-radius: 0px;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+QTableWidget {
+    border: none;
+    border-radius: 25px;
+    background-color: white;
+    /* Necessário para o fundo arredondar corretamente */
+    padding: 1px;
+}
+QTableWidget::section:first {
+	font-family: &quot;Times New Roman&quot;;
+    font-size: 12px;
+	font-weight: bold;
+    color: black;
+}
+QTableWidget::section:second, third {
+	font-family: &quot;Times New Roman&quot;;
+    font-size: 10px;
+    color: rgb(152, 152, 152);
+	text-align: center;
+}
+QTableWidget::section:last {
+	font-family: &quot;Times New Roman&quot;;
+    font-size: 12px;
+	font-weight: bold;
+    color: black;
+	text-align: center;
+}</string>
+    </property>
+    <property name="editTriggers">
+     <set>QAbstractItemView::NoEditTriggers</set>
+    </property>
+    <property name="alternatingRowColors">
+     <bool>true</bool>
+    </property>
+    <property name="sortingEnabled">
+     <bool>true</bool>
+    </property>
+    <property name="columnCount">
+     <number>3</number>
+    </property>
+    <attribute name="horizontalHeaderVisible">
+     <bool>true</bool>
+    </attribute>
+    <attribute name="horizontalHeaderHighlightSections">
+     <bool>true</bool>
+    </attribute>
+    <attribute name="horizontalHeaderStretchLastSection">
+     <bool>true</bool>
+    </attribute>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <column/>
+    <column/>
+    <column/>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>100</y>
+      <width>420</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Georgia</family>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: white;
+border-radius: 14px;</string>
+    </property>
+    <property name="inputMask">
+     <string/>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="maxLength">
+     <number>32767</number>
+    </property>
+    <property name="echoMode">
+     <enum>QLineEdit::Normal</enum>
+    </property>
+    <property name="placeholderText">
+     <string>buscar por nome ou documento</string>
+    </property>
    </widget>
   </widget>
   <widget class="QFrame" name="menu_lateral">
