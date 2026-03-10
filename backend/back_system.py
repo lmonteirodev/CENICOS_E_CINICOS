@@ -10,6 +10,12 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 import os
 import shutil
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
+import datetime
 
 #================================= API =============================
 
@@ -79,16 +85,13 @@ class DashScreen(QtWidgets.QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
 
-        # 1. Mapear a Tabela
         self.tableWidget = self.ui.findChild(QtWidgets.QTableWidget, "tableWidget")
 
-        # 2. Conectar botões (Menu e Dashboard)
         self._connect_buttons()
 
-        # 3. Configurar e Carregar
         if self.tableWidget:
             self.configurar_tabela_resumo()
-            self.carregar_dados_recentes() # <-- ESSA FUNÇÃO BUSCA OS DADOS
+            self.carregar_dados_recentes()
 
     def configurar_tabela_resumo(self):
         self.tableWidget.setColumnCount(2)
@@ -102,27 +105,20 @@ class DashScreen(QtWidgets.QWidget):
     def carregar_dados_recentes(self):
         """Busca os últimos clientes cadastrados para exibir no resumo"""
         try:
-            # Usando o DAO que você já tem para buscar os clientes
             clientes = ClienteDAO.carregar_clientes() 
-            
-            # Vamos exibir apenas os 5 últimos, por exemplo
             ultimos_clientes = clientes[-5:] 
             
             self.tableWidget.setRowCount(len(ultimos_clientes))
 
             for i, (nome, documento, telefone, email) in enumerate(ultimos_clientes):
-                # Criar itens da tabela
                 item_nome = QtWidgets.QTableWidgetItem(str(nome))
                 item_tel = QtWidgets.QTableWidgetItem(str(telefone))
 
-                # Alinhamento
                 item_tel.setTextAlignment(QtCore.Qt.AlignCenter)
 
-                # Inserir na tabela
                 self.tableWidget.setItem(i, 0, item_nome)
                 self.tableWidget.setItem(i, 1, item_tel)
                 
-                # Ajustar altura da linha para ficar elegante
                 self.tableWidget.setRowHeight(i, 45)
 
         except Exception as e:
@@ -140,112 +136,116 @@ class ClienteScreen(QtWidgets.QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
         
-        self.novo_cliente = self.ui.findChild(QtWidgets.QPushButton, "pushButton_6")
         self.tableWidget = self.ui.findChild(QtWidgets.QTableWidget, "tableWidget")
-        
-        # #======================== Botões de Filtro =========================
-        # # BOTÕES DE FILTRO
-        # self.btn_todos = self.ui.findChild(QtWidgets.QPushButton, "btn_filtro_todos_cliente")
-        # self.btn_ativos = self.ui.findChild(QtWidgets.QPushButton, "btn_filtro_ativos_cliente")
-        # self.btn_inativos = self.ui.findChild(QtWidgets.QPushButton, "btn_filtro_inativos_cliente")
-        # self.btn_filtrar = self.ui.findChild(QtWidgets.QPushButton, "btn_filtro_cliente")
-
-        # # GRUPO DE FILTRO
-        # self.grupo_filtro = QButtonGroup()
-
-        # self.grupo_filtro.addButton(self.btn_todos)
-        # self.grupo_filtro.addButton(self.btn_ativos)
-        # self.grupo_filtro.addButton(self.btn_inativos)
-
-        # # tornar os botões selecionáveis
-        # self.btn_todos.setCheckable(True)
-        # self.btn_ativos.setCheckable(True)
-        # self.btn_inativos.setCheckable(True)
-
-        # self.btn_todos.setChecked(True)
-
-        # # conectar botão de filtro
-        # if self.btn_filtrar:
-        #     self.btn_filtrar.clicked.connect(self.aplicar_filtro)
-        
-        self._connect_buttons()
-
-        if self.novo_cliente:
-            self.novo_cliente.clicked.connect(lambda: self.controller.show_screen("cadastro_cliente"))
-            self.novo_cliente.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.txt_busca = self.ui.findChild(QtWidgets.QLineEdit, "lineEdit")
+        self.btn_todos = self.ui.findChild(QtWidgets.QPushButton, "pushButton_7")
+        self.btn_ativos = self.ui.findChild(QtWidgets.QPushButton, "pushButton_4")
+        self.btn_inativos = self.ui.findChild(QtWidgets.QPushButton, "pushButton_8")
 
         if self.tableWidget:
             self.configurar_tabela()
+            self.tableWidget.cellDoubleClicked.connect(self.alterar_status_interface)
             self.carregar_clientes()
+
+        if self.txt_busca:
+            self.txt_busca.textChanged.connect(self.filtrar_tabela)
         
-    
-    def configurar_tabela(self):
-        self.tableWidget.setColumnCount(5)
-        self.tableWidget.setHorizontalHeaderLabels(
-            ["Cliente", "Documento", "Contato", "Status", "Serviços"]
-        )
+        self._configurar_grupo_filtros()
+        self._connect_buttons()
 
-        header = self.tableWidget.horizontalHeader()
-
-        for i in range(5):
-            header.setSectionResizeMode(i, QtWidgets.QHeaderView.Fixed)
-
-        self.tableWidget.setColumnWidth(0, 400) # Nome
-        self.tableWidget.setColumnWidth(1, 200) # CPF/CNPJ
-        self.tableWidget.setColumnWidth(2, 300) # Contato
-        self.tableWidget.setColumnWidth(3, 100) # Status
-        self.tableWidget.setColumnWidth(4, 100) # Qtd Serviços
-        self.tableWidget.setShowGrid(False)
+    def _configurar_grupo_filtros(self):
+        self.grupo_filtro = QButtonGroup(self)
+        for btn in [self.btn_todos, self.btn_ativos, self.btn_inativos]:
+            if btn:
+                btn.setCheckable(True)
+                self.grupo_filtro.addButton(btn)
+                btn.clicked.connect(self.filtrar_tabela)
+        if self.btn_todos: self.btn_todos.setChecked(True)
 
     def carregar_clientes(self):       
         try:
+            self.tableWidget.setRowCount(0)
             clientes = ClienteDAO.carregar_clientes()
-            self.tableWidget.setRowCount(len(clientes))
 
-            for i, (nome, documento, telefone, email) in enumerate(clientes):
-                contato = f"{email}\n{telefone}" if email and telefone else (email or telefone or "N/A")
+            for i, dados in enumerate(clientes):
+                self.tableWidget.insertRow(i)
+                nome, documento, telefone, email = dados[:4]
+
+                status_inicial = "ATIVO"
 
                 item_nome = QtWidgets.QTableWidgetItem(str(nome))
                 item_doc = QtWidgets.QTableWidgetItem(str(documento))
-                item_contato = QtWidgets.QTableWidgetItem(str(contato))
-                item_status = QtWidgets.QTableWidgetItem("ATIVO")
+                item_contato = QtWidgets.QTableWidgetItem(f"{email}\n{telefone}")
+                item_status = QtWidgets.QTableWidgetItem(status_inicial)
                 item_servicos = QtWidgets.QTableWidgetItem("0")
 
-                item_doc.setTextAlignment(Qt.AlignCenter)
-                item_contato.setTextAlignment(Qt.AlignCenter)
-                item_status.setTextAlignment(Qt.AlignCenter)
-                item_servicos.setTextAlignment(Qt.AlignCenter)
+                item_status.setForeground(QtGui.QColor("#28a745"))
+                
+                for item in [item_doc, item_contato, item_status, item_servicos]:
+                    item.setTextAlignment(Qt.AlignCenter)
 
                 self.tableWidget.setItem(i, 0, item_nome)
                 self.tableWidget.setItem(i, 1, item_doc)
                 self.tableWidget.setItem(i, 2, item_contato)
                 self.tableWidget.setItem(i, 3, item_status)
                 self.tableWidget.setItem(i, 4, item_servicos)
+                self.tableWidget.setRowHeight(i, 60)
 
-                self.tableWidget.setRowHeight(i, 60)       
         except Exception as e:
-            print(f"Erro detalhado: {e}")
-            QtWidgets.QMessageBox.critical(self, "Erro", f"Erro ao carregar clientes: {e}")
+            print(f"Erro ao carregar: {e}")
 
-        # if filtro == "ativos":
-        #     clientes = [c for c in clientes if c[3] == "ativos"]
-        # elif filtro == "inativos":    
-        #     clientes = [c for c in clientes if c[3] == "inativos"]
-            
-        # self.tableWidget.setRowCount(len(clientes))
-    # try:       
-    #     def aplicar_filtro(self):
+    def alterar_status_interface(self, row, column):
+        """Altera o status apenas visualmente na tabela"""
+        if column != 3: return
 
-    #         if self.btn_todos.isChecked():
-    #             self.carregar_clientes("todos")
-    #         elif self.btn_ativos.isChecked():
-    #             self.carregar_clientes("ativos")
-    #         elif self.btn_inativos.isChecked():
-    #             self.carregar_clientes("inativos")
+        item_status = self.tableWidget.item(row, 3)
+        status_atual = item_status.text()
+        novo_status = "INATIVO" if status_atual == "ATIVO" else "ATIVO"
 
-    # except Exception as e:
-    #     print(f"Erro detalhado: {e}")
+        msg = QMessageBox(self)
+        msg.setIcon(QMessageBox.Question)
+        msg.setWindowTitle("Alterar Status")
+        msg.setText(f"Deseja marcar como {novo_status}?")
+        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         
+        if msg.exec_() == QMessageBox.Yes:
+            item_status.setText(novo_status)
+
+            cor = "#28a745" if novo_status == "ATIVO" else "#dc3545"
+            item_status.setForeground(QtGui.QColor(cor))
+
+            self.filtrar_tabela()
+
+    def filtrar_tabela(self):
+        """Lógica de filtro que lê o que está na tela agora"""
+        texto = self.txt_busca.text().lower() if self.txt_busca else ""
+
+        btn_selecionado = self.grupo_filtro.checkedButton()
+        filtro_status = "TODOS"
+        if btn_selecionado == self.btn_ativos: filtro_status = "ATIVO"
+        elif btn_selecionado == self.btn_inativos: filtro_status = "INATIVO"
+
+        for row in range(self.tableWidget.rowCount()):
+            nome = self.tableWidget.item(row, 0).text().lower()
+            doc = self.tableWidget.item(row, 1).text().lower()
+            status_atual = self.tableWidget.item(row, 3).text()
+
+            match_texto = texto in nome or texto in doc
+            match_status = (filtro_status == "TODOS") or (status_atual == filtro_status)
+
+            self.tableWidget.setRowHidden(row, not (match_texto and match_status))
+
+    def configurar_tabela(self):
+        self.tableWidget.setColumnCount(5)
+        self.tableWidget.setHorizontalHeaderLabels(["Cliente", "Documento", "Contato", "Status", "Serviços"])
+        header = self.tableWidget.horizontalHeader()
+        header.setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+
+    def _connect_buttons(self):
+        _connect_menu_buttons(self.ui, self.controller)
+
     def _connect_buttons(self):
         _connect_menu_buttons(self.ui, self.controller)
 
@@ -318,41 +318,62 @@ class FuncScreen(QtWidgets.QWidget):
 
         self.novo_func = self.ui.findChild(QtWidgets.QPushButton, "pushButton")
         self.tableWidget = self.ui.findChild(QtWidgets.QTableWidget, "tableWidget")
-        
+        self.txt_busca = self.ui.findChild(QtWidgets.QLineEdit, "lineEdit")
+
+        self.btn_todos = self.ui.findChild(QtWidgets.QPushButton, "pushButton_5")
+        self.btn_ativos = self.ui.findChild(QtWidgets.QPushButton, "pushButton_4")
+        self.btn_inativos = self.ui.findChild(QtWidgets.QPushButton, "pushButton_6")
+
+        if self.tableWidget:
+            self.configurar_tabela()
+            self.tableWidget.cellDoubleClicked.connect(self.alterar_status_interface)
+            self.carregar_func()
+
+        if self.txt_busca:
+            self.txt_busca.textChanged.connect(self.filtrar_tabela)
+
+        self._configurar_grupo_filtros()
         self._connect_buttons()
 
         if self.novo_func:
             self.novo_func.clicked.connect(lambda: self.controller.show_screen("cadastro_funcionario"))
             self.novo_func.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
 
-        if self.tableWidget:
-            self.configurar_tabela()
-            self.carregar_func()
+    def _configurar_grupo_filtros(self):
+        """Configura os botões de filtro para funcionarem em grupo"""
+        self.grupo_filtro = QButtonGroup(self)
+        filtros = [self.btn_todos, self.btn_ativos, self.btn_inativos]
+        
+        for btn in filtros:
+            if btn:
+                btn.setCheckable(True)
+                self.grupo_filtro.addButton(btn)
+                btn.clicked.connect(self.filtrar_tabela)
+        
+        if self.btn_todos:
+            self.btn_todos.setChecked(True)
 
     def configurar_tabela(self):
         self.tableWidget.setColumnCount(5)
         self.tableWidget.setHorizontalHeaderLabels(
-            ["Cliente", "Documento", "Contato", "Status", "Cargo"]
+            ["Funcionário", "Documento", "Contato", "Status", "Cargo"]
         )
+        self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tableWidget.setShowGrid(False)
 
         header = self.tableWidget.horizontalHeader()
-
-        for i in range(5):
-            header.setSectionResizeMode(i, QtWidgets.QHeaderView.Fixed)
-
-        self.tableWidget.setColumnWidth(0, 400) # Nome
-        self.tableWidget.setColumnWidth(1, 200) # CPF/CNPJ
-        self.tableWidget.setColumnWidth(2, 300) # Contato
-        self.tableWidget.setColumnWidth(3, 100) # Status
-        self.tableWidget.setColumnWidth(4, 100) # Cargo
-        self.tableWidget.setShowGrid(False)
+        header.setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers) # Impede edição 
 
     def carregar_func(self):
         try:
             func = FuncDAO.carregar_func()
-            self.tableWidget.setRowCount(len(func))
+            self.tableWidget.setRowCount(0)
 
             for i, (nome, documento, cargo, email, telefone) in enumerate(func):
+                self.tableWidget.insertRow(i)
                 contato = f"{email}\n{telefone}" if email and telefone else (email or telefone or "N/A")
 
                 item_nome = QtWidgets.QTableWidgetItem(str(nome))
@@ -361,22 +382,61 @@ class FuncScreen(QtWidgets.QWidget):
                 item_status = QtWidgets.QTableWidgetItem("ATIVO")
                 item_cargo = QtWidgets.QTableWidgetItem(str(cargo))
 
-                item_doc.setTextAlignment(Qt.AlignCenter)
-                item_contato.setTextAlignment(Qt.AlignCenter)
-                item_status.setTextAlignment(Qt.AlignCenter)
-                item_cargo.setTextAlignment(Qt.AlignCenter)
+                item_status.setForeground(QtGui.QColor("#28a745"))
+
+                # Alinhamento
+                for item in [item_doc, item_contato, item_status, item_cargo]:
+                    item.setTextAlignment(Qt.AlignCenter)
 
                 self.tableWidget.setItem(i, 0, item_nome)
                 self.tableWidget.setItem(i, 1, item_doc)
                 self.tableWidget.setItem(i, 2, item_contato)
                 self.tableWidget.setItem(i, 3, item_status)
                 self.tableWidget.setItem(i, 4, item_cargo)
-
                 self.tableWidget.setRowHeight(i, 60)
                 
         except Exception as e:
-            print(f"Erro detalhado: {e}")
+            print(f"Erro ao carregar funcionários: {e}")
             QtWidgets.QMessageBox.critical(self, "Erro", f"Erro ao carregar funcionários: {e}")
+
+    def filtrar_tabela(self):
+        """Filtra por nome/doc e pelos botões de status"""
+        texto = self.txt_busca.text().lower() if self.txt_busca else ""
+        
+        btn_check = self.grupo_filtro.checkedButton()
+        filtro_status = "TODOS"
+        if btn_check == self.btn_ativos: filtro_status = "ATIVO"
+        elif btn_check == self.btn_inativos: filtro_status = "INATIVO"
+
+        for row in range(self.tableWidget.rowCount()):
+            nome = self.tableWidget.item(row, 0).text().lower()
+            doc = self.tableWidget.item(row, 1).text().lower()
+            status_celula = self.tableWidget.item(row, 3).text().upper()
+
+            match_busca = texto in nome or texto in doc
+            match_status = (filtro_status == "TODOS") or (status_celula == filtro_status)
+
+            self.tableWidget.setRowHidden(row, not (match_busca and match_status))
+
+    def alterar_status_interface(self, row, column):
+        """Muda o status entre Ativo/Inativo ao clicar duas vezes na coluna 3"""
+        if column != 3: return
+
+        item_status = self.tableWidget.item(row, 3)
+        status_atual = item_status.text()
+        novo_status = "INATIVO" if status_atual == "ATIVO" else "ATIVO"
+
+        confirmar = QMessageBox.question(
+            self, "Alterar Status", 
+            f"Deseja alterar o status para {novo_status}?",
+            QMessageBox.Yes | QMessageBox.No
+        )
+
+        if confirmar == QMessageBox.Yes:
+            item_status.setText(novo_status)
+            cor = "#28a745" if novo_status == "ATIVO" else "#dc3545"
+            item_status.setForeground(QtGui.QColor(cor))
+            self.filtrar_tabela()
 
     def _connect_buttons(self):
         _connect_menu_buttons(self.ui, self.controller)
@@ -451,7 +511,6 @@ class DocScreen(QtWidgets.QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
 
-        # 1. Caminhos do Google Drive (Ajuste a letra da unidade se necessário)
         self.base_path = r"G:\Meu Drive\Sistema_Arquivos"
         self.pastas = {
             "Clientes": os.path.join(self.base_path, "Clientes"),
@@ -459,26 +518,27 @@ class DocScreen(QtWidgets.QWidget):
             "Fiscais": os.path.join(self.base_path, "Fiscais")
         }
         
-        # Garante que as subpastas existam no Drive
         for p in self.pastas.values():
             os.makedirs(p, exist_ok=True)
 
         self.filtro_atual = "Clientes"
 
-        # 2. Mapeamento de Widgets do UI
         self.tableWidget = self.ui.findChild(QtWidgets.QTableWidget, "tableWidget")
         self.btn_anexar = self.ui.findChild(QtWidgets.QPushButton, "pushButton_7")
-        
-        # Botões de Filtro superiores
+
+        self.txt_busca = self.ui.findChild(QtWidgets.QLineEdit, "lineEdit")
+
         self.btn_filtro_cli = self.ui.findChild(QtWidgets.QPushButton, "pushButton")
         self.btn_filtro_fun = self.ui.findChild(QtWidgets.QPushButton, "pushButton_2")
         self.btn_filtro_fis = self.ui.findChild(QtWidgets.QPushButton, "pushButton_8")
 
         self.icon_provider = QFileIconProvider()
 
-        # 3. Inicialização de Lógica
         self._configurar_filtros_interface()
         self._connect_buttons()
+
+        if self.txt_busca:
+            self.txt_busca.textChanged.connect(self.filtrar_tabela)
 
         if self.btn_anexar:
             self.btn_anexar.clicked.connect(self.escolher_origem_e_anexar)
@@ -506,12 +566,20 @@ class DocScreen(QtWidgets.QWidget):
             self.btn_filtro_cli.setChecked(True)
 
     def mudar_aba_filtro(self, tipo):
-        """Altera a visualização da tabela conforme a aba clicada"""
         self.filtro_atual = tipo
+        if self.txt_busca:
+            self.txt_busca.clear()
         self.listar_arquivos()
 
+    def filtrar_tabela(self):
+        """Filtra as linhas da tabela em tempo real"""
+        texto = self.txt_busca.text().lower()
+        for row in range(self.tableWidget.rowCount()):
+            item = self.tableWidget.item(row, 0)
+            if item:
+                self.tableWidget.setRowHidden(row, texto not in item.text().lower())
+
     def configurar_tabela(self):
-        """Define proporções e estilos para a tabela de documentos"""
         self.tableWidget.setColumnCount(5)
         self.tableWidget.setHorizontalHeaderLabels(["Arquivo", "Modificado em", "Origem", "", ""])
         
@@ -522,18 +590,15 @@ class DocScreen(QtWidgets.QWidget):
         header.setSectionResizeMode(3, QtWidgets.QHeaderView.Fixed)
         header.setSectionResizeMode(4, QtWidgets.QHeaderView.Fixed)
         
-        self.tableWidget.setColumnWidth(3, 70) # Coluna Abrir
-        self.tableWidget.setColumnWidth(4, 70) # Coluna Excluir
+        self.tableWidget.setColumnWidth(3, 70)
+        self.tableWidget.setColumnWidth(4, 70)
         
-        # Estética Geral
         self.tableWidget.setShowGrid(False)
         self.tableWidget.setAlternatingRowColors(True)
         self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.tableWidget.verticalHeader().setVisible(False)
-        self.tableWidget.setStyleSheet("alternate-background-color: #fcf6f6; background-color: white;")
 
     def listar_arquivos(self):
-        """Lê os arquivos da pasta atual e preenche a tabela"""
         self.tableWidget.setRowCount(0)
         caminho_pasta = self.pastas[self.filtro_atual]
         
@@ -548,40 +613,38 @@ class DocScreen(QtWidgets.QWidget):
                 caminho_full = os.path.join(caminho_pasta, nome)
                 info = QFileInfo(caminho_full)
 
-                # --- Dados ---
                 item_nome = QtWidgets.QTableWidgetItem(nome)
                 item_nome.setIcon(self.icon_provider.icon(info))
+                self.tableWidget.setItem(row, 0, item_nome)
                 
                 stats = os.stat(caminho_full)
-                data_str = QDateTime.fromSecsSinceEpoch(int(stats.st_mtime)).toString("dd/MM/yyyy HH:mm")
+                data_str = QDateTime.fromSecsSinceEpoch(int(stats.st_mtime)).toString("dd/MM/yyyy")
+                item_data = QtWidgets.QTableWidgetItem(data_str)
+                item_data.setTextAlignment(Qt.AlignCenter)
+                self.tableWidget.setItem(row, 1, item_data)
                 
-                self.tableWidget.setItem(row, 0, item_nome)
-                self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(data_str))
-                self.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem(self.filtro_atual))
+                item_origem = QtWidgets.QTableWidgetItem(self.filtro_atual)
+                item_origem.setTextAlignment(Qt.AlignCenter)
+                self.tableWidget.setItem(row, 2, item_origem)
 
-                # --- Botão Abrir (Pequeno) ---
                 btn_abrir = QtWidgets.QPushButton("Abrir")
                 btn_abrir.setFixedSize(55, 24)
-                btn_abrir.setStyleSheet("font-size: 10px; background-color: #f0f0f0; border: 1px solid #ddd; border-radius: 3px;")
+                btn_abrir.setStyleSheet("font-size: 12px; background-color: #f0f0f0; border: 1px solid #ddd; border-radius: 3px;")
                 btn_abrir.clicked.connect(lambda ch, p=caminho_full: os.startfile(p))
                 
-                # --- Botão Excluir (Pequeno) ---
                 btn_excluir = QtWidgets.QPushButton("Excluir")
                 btn_excluir.setFixedSize(55, 24)
-                btn_excluir.setStyleSheet("font-size: 10px; color: #d9534f; background-color: transparent;")
+                btn_excluir.setStyleSheet("font-size: 12px; color: #d9534f; background-color: transparent;")
                 btn_excluir.clicked.connect(lambda ch, p=caminho_full: self.deletar_arquivo(p))
 
-                # Containers para centralizar botões
                 self.tableWidget.setCellWidget(row, 3, self._criar_container_centralizado(btn_abrir))
                 self.tableWidget.setCellWidget(row, 4, self._criar_container_centralizado(btn_excluir))
-                
                 self.tableWidget.setRowHeight(row, 38)
 
         except Exception as e:
             print(f"Erro ao listar arquivos: {e}")
 
     def _criar_container_centralizado(self, widget):
-        """Auxiliar para centralizar botões pequenos dentro da célula"""
         container = QtWidgets.QWidget()
         layout = QtWidgets.QHBoxLayout(container)
         layout.addWidget(widget)
@@ -590,7 +653,6 @@ class DocScreen(QtWidgets.QWidget):
         return container
 
     def escolher_origem_e_anexar(self):
-        """Pergunta a origem antes de abrir o seletor de arquivos"""
         opcoes = ["Clientes", "Funcionários", "Fiscais"]
         origem, ok = QInputDialog.getItem(self, "Nova Anexação", "Escolha o destino do documento:", opcoes, 0, False)
 
@@ -603,14 +665,12 @@ class DocScreen(QtWidgets.QWidget):
                         destino = os.path.join(self.pastas[origem], nome)
                         shutil.copy2(f, destino)
                     
-                    # Muda a aba automaticamente para mostrar onde o arquivo caiu
                     self.sincronizar_aba_e_listar(origem)
                     QMessageBox.information(self, "Sucesso", f"Arquivos salvos em {origem}!")
                 except Exception as e:
                     QMessageBox.critical(self, "Erro", f"Falha no upload: {e}")
 
     def sincronizar_aba_e_listar(self, origem):
-        """Marca o botão de filtro correto e atualiza a tabela"""
         mapeamento = {
             "Clientes": self.btn_filtro_cli,
             "Funcionários": self.btn_filtro_fun,
@@ -640,7 +700,6 @@ class AgendaScreen(QtWidgets.QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
 
-        # Mapeamento dos Widgets
         self.calendar_grande = self.ui.findChild(QtWidgets.QCalendarWidget, "calendarWidget_2")
         self.calendar_pequeno = self.ui.findChild(QtWidgets.QCalendarWidget, "calendarWidget")
         self.label_mes_ano = self.ui.findChild(QtWidgets.QLabel, "label_2")
@@ -649,21 +708,18 @@ class AgendaScreen(QtWidgets.QWidget):
 
         self._connect_buttons()
 
-        # Configurações de Botões
         if self.btn_agendar:
             self.btn_agendar.clicked.connect(lambda: self.controller.show_screen("agendamentos"))
             self.btn_agendar.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         
         if self.btn_hoje:
             self.btn_hoje.clicked.connect(self.ir_para_hoje)
-        
-        # Sincronização e Sinais
+
         if self.calendar_grande and self.calendar_pequeno:
             self.calendar_grande.currentPageChanged.connect(self.atualizar_label_data)
             self.calendar_pequeno.selectionChanged.connect(self.sincronizar_para_grande)
             self.calendar_grande.selectionChanged.connect(self.sincronizar_para_pequeno)
 
-            # Inicializa o label de data
             self.atualizar_label_data(self.calendar_grande.yearShown(), self.calendar_grande.monthShown())
 
     def showEvent(self, event):
@@ -677,24 +733,20 @@ class AgendaScreen(QtWidgets.QWidget):
             return
 
         try:
-            # Chama o DAO para listar datas e tipos (sem abrir banco na Screen)
             agendamentos = AgendamentoDAO.listar_agendamentos_calendario()
             
-            # Limpa formatações anteriores para evitar "rastros" de cores
             self.calendar_grande.setDateTextFormat(QtCore.QDate(), QtGui.QTextCharFormat())
 
             for data_db, id_tipo in agendamentos:
-                # Converte datetime do banco para QDate
                 data_qdate = QtCore.QDate(data_db.year, data_db.month, data_db.day)
                 
-                # Define o estilo visual (Cores baseadas na sua legenda)
                 fmt = QtGui.QTextCharFormat()
-                fmt.setForeground(QtGui.QColor("white")) # Texto branco para melhor contraste
+                fmt.setForeground(QtGui.QColor("white"))
                 
-                if id_tipo == 1: fmt.setBackground(QtGui.QColor("#E57373"))   # Ensaios (Vermelho)
-                elif id_tipo == 2: fmt.setBackground(QtGui.QColor("#64B5F6")) # Esquete (Azul)
-                elif id_tipo == 3: fmt.setBackground(QtGui.QColor("#81C784")) # Talk-Show (Verde)
-                elif id_tipo == 4: fmt.setBackground(QtGui.QColor("#FFB74D")) # Interação (Amarelo/Laranja)
+                if id_tipo == 1: fmt.setBackground(QtGui.QColor("#E57373"))
+                elif id_tipo == 2: fmt.setBackground(QtGui.QColor("#64B5F6"))
+                elif id_tipo == 3: fmt.setBackground(QtGui.QColor("#81C784"))
+                elif id_tipo == 4: fmt.setBackground(QtGui.QColor("#FFB74D"))
                 
                 self.calendar_grande.setDateTextFormat(data_qdate, fmt)
                 
@@ -739,8 +791,7 @@ class AgendamentosScreen(QtWidgets.QWidget):
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
-        
-        # Mapeamento dos Widgets
+
         self.calendar_grande = self.ui.findChild(QtWidgets.QCalendarWidget, "calendarWidget_2")
         self.calendar_pequeno = self.ui.findChild(QtWidgets.QCalendarWidget, "calendarWidget")
         self.label_mes_ano = self.ui.findChild(QtWidgets.QLabel, "label_2")
@@ -812,7 +863,155 @@ class AgendamentosScreen(QtWidgets.QWidget):
 
     def _connect_buttons(self):
         _connect_menu_buttons(self.ui, self.controller)
+
+class OrcamentoScreen(QtWidgets.QWidget):
+    def __init__(self, controller):
+        super().__init__()
+        self.controller = controller
+        self.ui = uic.loadUi("telas/form_financeiro_cad.ui") # Nome do arquivo que você possui
+        layout = QtWidgets.QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.ui)
+
+        # Mapeamento de Widgets
+        self.input_item = self.ui.findChild(QtWidgets.QLineEdit, "lineEdit_item")
+        self.input_valor = self.ui.findChild(QtWidgets.QLineEdit, "lineEdit_valor")
+        self.input_cliente = self.ui.findChild(QtWidgets.QLineEdit, "lineEdit_cliente")
+        self.btn_adicionar = self.ui.findChild(QtWidgets.QPushButton, "btn_adicionar_item")
+        self.btn_salvar = self.ui.findChild(QtWidgets.QPushButton, "btn_salvar_orcamento")
+        self.list_resumo = self.ui.findChild(QtWidgets.QListWidget, "listWidget_resumo")
+        self.lbl_total = self.ui.findChild(QtWidgets.QLabel, "label_total")
+
+        self.itens_temporarios = [] # Lista de tuplas (descrição, valor)
+        self.total_acumulado = 0.0
+
+        # Conexões
+        if self.btn_adicionar:
+            self.btn_adicionar.clicked.connect(self.adicionar_item_lista)
+        if self.btn_salvar:
+            self.btn_salvar.clicked.connect(self.salvar_e_enviar_financeiro)
+
+        _connect_menu_buttons(self.ui, self.controller)
+
+    def adicionar_item_lista(self):
+        desc = self.input_item.text().strip()
+        valor_str = self.input_valor.text().replace(',', '.')
+
+        try:
+            valor = float(valor_str)
+            self.itens_temporarios.append((desc, valor))
+            
+            # Adiciona ao QListWidget
+            item_texto = f"{desc} - R$ {valor:.2f}"
+            self.list_resumo.addItem(item_texto)
+
+            # Atualiza Total
+            self.total_acumulado += valor
+            self.lbl_total.setText(f"R$ {self.total_acumulado:.2f}")
+
+            # Limpa campos
+            self.input_item.clear()
+            self.input_valor.clear()
+            self.input_item.setFocus()
+        except ValueError:
+            QMessageBox.warning(self, "Erro", "Insira um valor numérico válido.")
+
+    def salvar_e_enviar_financeiro(self):
+        cliente = self.input_cliente.text().strip()
+        if not cliente or not self.itens_temporarios:
+            QMessageBox.warning(self, "Erro", "Preencha o cliente e adicione itens.")
+            return
+
+        # 1. Aqui você chamaria o seu DAO para salvar no banco
+        # Ex: OrcamentoDAO.salvar(cliente, self.total_acumulado, self.itens_temporarios)
         
+        # 2. Notifica a tela de financeiro para atualizar
+        financeiro = self.controller.get_screen("financeiro")
+        if financeiro:
+            financeiro.adicionar_linha_manual(cliente, self.total_acumulado, self.itens_temporarios.copy())
+
+        QMessageBox.information(self, "Sucesso", "Orçamento salvo e enviado ao financeiro!")
+        self.limpar_tela()
+
+    def limpar_tela(self):
+        self.list_resumo.clear()
+        self.itens_temporarios = []
+        self.total_acumulado = 0.0
+        self.lbl_total.setText("R$ 0.00")
+        self.input_cliente.clear()
+
+class FinanceiroScreen(QtWidgets.QWidget):
+    def __init__(self, controller):
+        super().__init__()
+        self.controller = controller
+        self.ui = uic.loadUi("telas/form_financeiro.ui") # Nome fictício baseado na sua imagem
+        layout = QtWidgets.QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.ui)
+
+        self.tableWidget = self.ui.findChild(QtWidgets.QTableWidget, "tableWidget_historico")
+        self.configurar_tabela()
+        _connect_menu_buttons(self.ui, self.controller)
+
+    def configurar_tabela(self):
+        self.tableWidget.setColumnCount(4)
+        self.tableWidget.setHorizontalHeaderLabels(["Data", "Cliente", "Total", "Ações"])
+        self.tableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+
+    def adicionar_linha_manual(self, cliente, total, itens):
+        row = self.tableWidget.rowCount()
+        self.tableWidget.insertRow(row)
+        
+        data_atual = datetime.date.today().strftime("%d/%m/%Y")
+        
+        self.tableWidget.setItem(row, 0, QtWidgets.QTableWidgetItem(data_atual))
+        self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(cliente))
+        self.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem(f"R$ {total:.2f}"))
+
+        # Botão de Ação para PDF
+        btn_pdf = QtWidgets.QPushButton("Gerar PDF")
+        btn_pdf.setStyleSheet("background-color: #28a745; color: white; border-radius: 5px;")
+        btn_pdf.clicked.connect(lambda: self.gerar_pdf_orcamento(cliente, total, itens))
+        
+        self.tableWidget.setCellWidget(row, 3, btn_pdf)
+
+    def gerar_pdf_orcamento(self, cliente, total, itens):
+        nome_arquivo = f"Orcamento_{cliente}_{datetime.datetime.now().strftime('%H%M%S')}.pdf"
+        doc = SimpleDocTemplate(nome_arquivo, pagesize=letter)
+        elements = []
+        styles = getSampleStyleSheet()
+
+        # Título e Cabeçalho
+        elements.append(Paragraph(f"<b>ORÇAMENTO - {cliente}</b>", styles['Title']))
+        elements.append(Paragraph(f"Data: {datetime.date.today().strftime('%d/%m/%Y')}", styles['Normal']))
+        elements.append(Paragraph("<br/><br/>", styles['Normal']))
+
+        # Tabela de Itens
+        dados_tabela = [["Descrição", "Valor (R$)"]]
+        for desc, valor in itens:
+            dados_tabela.append([desc, f"{valor:.2f}"])
+        dados_tabela.append(["TOTAL", f"{total:.2f}"])
+
+        t = Table(dados_tabela, colWidths=[300, 100])
+        t.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('BACKGROUND', (0, -1), (-1, -1), colors.beige),
+        ]))
+        
+        elements.append(t)
+        
+        try:
+            doc.build(elements)
+            QMessageBox.information(self, "PDF", f"PDF gerado com sucesso: {nome_arquivo}")
+            os.startfile(nome_arquivo) # Abre o PDF automaticamente
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao gerar PDF: {e}")
+
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()

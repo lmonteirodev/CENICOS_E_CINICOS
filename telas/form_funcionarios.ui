@@ -140,12 +140,20 @@ border-radius: 14px;</string>
      </property>
      <property name="styleSheet">
       <string notr="true">QPushButton {
-	text-align: center;
-    background-color: rgb(182,75,75);
-    color:  white;
+    text-align: center;
+    background-color: white;
+    color: rgb(139,139,139);
     border-radius: 10px;
 }
-</string>
+
+QPushButton:hover {
+    background-color: rgb(247,247,247);
+}
+
+QPushButton:pressed {
+    background-color: rgb(182,75,75);
+    color: white;
+}</string>
      </property>
      <property name="text">
       <string>Todos</string>
