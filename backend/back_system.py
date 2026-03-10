@@ -20,6 +20,28 @@ import datetime
 #================================= API =============================
 
 # Escopo para leitura e escrita no Drive
+SCOPES = ['https://www.googleapis.com/auth/drive']
+
+def obter_credenciais():
+    creds = None
+    # O arquivo token.json armazena o acesso do usuário
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    
+    # Se não houver credenciais válidas, peça ao usuário para logar
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            # Aqui ele lê o arquivo que você baixou do Google
+            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+        
+        # Salva as credenciais para a próxima vez
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
+    
+    return creds
 
 # ======================== FUNÇÃO MESTRA ============================
 def _connect_menu_buttons(ui, controller):
