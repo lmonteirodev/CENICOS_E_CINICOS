@@ -1,15 +1,17 @@
-# ============================== IMPORTS ==========================
+# ============================== IMPORTS ===========================
 from database_manager import ClienteDAO, FuncDAO, AgendamentoDAO
 from PyQt5 import QtWidgets, uic, QtCore, QtGui
-from PyQt5.QtCore import Qt, QDate
-from PyQt5.QtWidgets import QButtonGroup
+from PyQt5.QtCore import Qt, QDate, QFileInfo, QDateTime
+from PyQt5.QtWidgets import QButtonGroup, QFileIconProvider, QInputDialog, QFileDialog, QMessageBox
 import sys
 import os.path
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
+import os
+import shutil
 
-#================================= API ============================
+#================================= API =============================
 
 # Escopo para leitura e escrita no Drive
 SCOPES = ['https://www.googleapis.com/auth/drive']
@@ -35,7 +37,7 @@ def obter_credenciais():
     
     return creds
 
-# ======================== FUNÇÃO MESTRA ==========================
+# ======================== FUNÇÃO MESTRA ============================
 def _connect_menu_buttons(ui, controller):
     """Connect menu buttons from a loaded UI to controller.show_screen.
 
@@ -440,9 +442,6 @@ class FuncCadScreen(QtWidgets.QWidget):
     def _connect_buttons(self):
         _connect_menu_buttons(self.ui, self.controller)
 
-import os
-import subprocess
-
 class DocScreen(QtWidgets.QWidget):
     def __init__(self, controller):
         super().__init__()
@@ -452,81 +451,181 @@ class DocScreen(QtWidgets.QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
 
-        # 1. Configurações da Pasta (Ajuste para o seu caminho do Drive)
-        self.caminho_drive = r"G:\Meu Drive\Sistema_Arquivos" 
+        # 1. Caminhos do Google Drive (Ajuste a letra da unidade se necessário)
+        self.base_path = r"G:\Meu Drive\Sistema_Arquivos"
+        self.pastas = {
+            "Clientes": os.path.join(self.base_path, "Clientes"),
+            "Funcionários": os.path.join(self.base_path, "Funcionários"),
+            "Fiscais": os.path.join(self.base_path, "Fiscais")
+        }
         
-        # Criar a pasta se ela não existir
-        if not os.path.exists(self.caminho_drive):
-            try:
-                os.makedirs(self.caminho_drive)
-            except:
-                print("Aviso: Unidade G: não encontrada. Verifique o Google Drive.")
+        # Garante que as subpastas existam no Drive
+        for p in self.pastas.values():
+            os.makedirs(p, exist_ok=True)
 
-        # 2. Mapear Widgets
+        self.filtro_atual = "Clientes"
+
+        # 2. Mapeamento de Widgets do UI
         self.tableWidget = self.ui.findChild(QtWidgets.QTableWidget, "tableWidget")
-        self.btn_upload = self.ui.findChild(QtWidgets.QPushButton, "pushButton_7") # Crie este botão no UI
-
-        # 3. Conectar Sinais
-        self._connect_buttons()
-        if self.btn_upload:
-            self.btn_upload.clicked.connect(self.fazer_upload_local)
+        self.btn_anexar = self.ui.findChild(QtWidgets.QPushButton, "pushButton_7")
         
-        # Configurar Tabela
+        # Botões de Filtro superiores
+        self.btn_filtro_cli = self.ui.findChild(QtWidgets.QPushButton, "pushButton")
+        self.btn_filtro_fun = self.ui.findChild(QtWidgets.QPushButton, "pushButton_2")
+        self.btn_filtro_fis = self.ui.findChild(QtWidgets.QPushButton, "pushButton_8")
+
+        self.icon_provider = QFileIconProvider()
+
+        # 3. Inicialização de Lógica
+        self._configurar_filtros_interface()
+        self._connect_buttons()
+
+        if self.btn_anexar:
+            self.btn_anexar.clicked.connect(self.escolher_origem_e_anexar)
+
         if self.tableWidget:
             self.configurar_tabela()
             self.listar_arquivos()
 
+    def _configurar_filtros_interface(self):
+        """Transforma os botões superiores em abas selecionáveis"""
+        self.grupo_filtros = QButtonGroup(self)
+        filtros = [
+            (self.btn_filtro_cli, "Clientes"),
+            (self.btn_filtro_fun, "Funcionários"),
+            (self.btn_filtro_fis, "Fiscais")
+        ]
+        
+        for btn, tipo in filtros:
+            if btn:
+                btn.setCheckable(True)
+                self.grupo_filtros.addButton(btn)
+                btn.clicked.connect(lambda ch, t=tipo: self.mudar_aba_filtro(t))
+        
+        if self.btn_filtro_cli:
+            self.btn_filtro_cli.setChecked(True)
+
+    def mudar_aba_filtro(self, tipo):
+        """Altera a visualização da tabela conforme a aba clicada"""
+        self.filtro_atual = tipo
+        self.listar_arquivos()
+
     def configurar_tabela(self):
-        self.tableWidget.setColumnCount(3)
-        self.tableWidget.setHorizontalHeaderLabels(["Arquivo", "Última Modificação", "Ação"])
+        """Define proporções e estilos para a tabela de documentos"""
+        self.tableWidget.setColumnCount(5)
+        self.tableWidget.setHorizontalHeaderLabels(["Arquivo", "Modificado em", "Origem", "", ""])
+        
         header = self.tableWidget.horizontalHeader()
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-        self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(3, QtWidgets.QHeaderView.Fixed)
+        header.setSectionResizeMode(4, QtWidgets.QHeaderView.Fixed)
+        
+        self.tableWidget.setColumnWidth(3, 70) # Coluna Abrir
+        self.tableWidget.setColumnWidth(4, 70) # Coluna Excluir
+        
+        # Estética Geral
+        self.tableWidget.setShowGrid(False)
+        self.tableWidget.setAlternatingRowColors(True)
+        self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tableWidget.verticalHeader().setVisible(False)
+        self.tableWidget.setStyleSheet("alternate-background-color: #fcf6f6; background-color: white;")
 
     def listar_arquivos(self):
-        """Lê a pasta do Drive e preenche a tabela"""
-        if not os.path.exists(self.caminho_drive):
-            return
-
-        arquivos = os.listdir(self.caminho_drive)
-        self.tableWidget.setRowCount(len(arquivos))
-
-        for i, nome in enumerate(arquivos):
-            caminho_completo = os.path.join(self.caminho_drive, nome)
-            
-            # Info do arquivo
-            stats = os.stat(caminho_completo)
-            data_mod = QDate.fromJulianDay(int(stats.st_mtime / 86400) + 2440588).toString("dd/MM/yyyy")
-
-            self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(nome))
-            self.tableWidget.setItem(i, 1, QtWidgets.QTableWidgetItem(data_mod))
-
-            # Botão para Abrir
-            btn_abrir = QtWidgets.QPushButton("Visualizar")
-            btn_abrir.clicked.connect(lambda ch, p=caminho_completo: self.abrir_arquivo(p))
-            self.tableWidget.setCellWidget(i, 2, btn_abrir)
-
-    def abrir_arquivo(self, caminho):
-        """Abre o arquivo no visualizador padrão do Windows"""
-        try:
-            os.startfile(caminho) # Comando nativo do Windows
-        except Exception as e:
-            QtWidgets.QMessageBox.warning(self, "Erro", f"Não foi possível abrir: {e}")
-
-    def fazer_upload_local(self):
-        """Simula upload apenas movendo o arquivo para a pasta do Drive"""
-        files, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "Selecionar Arquivos para Upload")
+        """Lê os arquivos da pasta atual e preenche a tabela"""
+        self.tableWidget.setRowCount(0)
+        caminho_pasta = self.pastas[self.filtro_atual]
         
-        if files:
-            import shutil
-            for f in files:
-                nome_arquivo = os.path.basename(f)
-                destino = os.path.join(self.caminho_drive, nome_arquivo)
-                shutil.copy2(f, destino) # Copia para a pasta do Drive
-            
-            self.listar_arquivos() # Atualiza a tabela
-            QtWidgets.QMessageBox.information(self, "Sucesso", "Arquivos sincronizados com o Drive!")
+        if not os.path.exists(caminho_pasta): return
+
+        try:
+            arquivos = os.listdir(caminho_pasta)
+            for nome in arquivos:
+                row = self.tableWidget.rowCount()
+                self.tableWidget.insertRow(row)
+                
+                caminho_full = os.path.join(caminho_pasta, nome)
+                info = QFileInfo(caminho_full)
+
+                # --- Dados ---
+                item_nome = QtWidgets.QTableWidgetItem(nome)
+                item_nome.setIcon(self.icon_provider.icon(info))
+                
+                stats = os.stat(caminho_full)
+                data_str = QDateTime.fromSecsSinceEpoch(int(stats.st_mtime)).toString("dd/MM/yyyy HH:mm")
+                
+                self.tableWidget.setItem(row, 0, item_nome)
+                self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(data_str))
+                self.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem(self.filtro_atual))
+
+                # --- Botão Abrir (Pequeno) ---
+                btn_abrir = QtWidgets.QPushButton("Abrir")
+                btn_abrir.setFixedSize(55, 24)
+                btn_abrir.setStyleSheet("font-size: 10px; background-color: #f0f0f0; border: 1px solid #ddd; border-radius: 3px;")
+                btn_abrir.clicked.connect(lambda ch, p=caminho_full: os.startfile(p))
+                
+                # --- Botão Excluir (Pequeno) ---
+                btn_excluir = QtWidgets.QPushButton("Excluir")
+                btn_excluir.setFixedSize(55, 24)
+                btn_excluir.setStyleSheet("font-size: 10px; color: #d9534f; background-color: transparent;")
+                btn_excluir.clicked.connect(lambda ch, p=caminho_full: self.deletar_arquivo(p))
+
+                # Containers para centralizar botões
+                self.tableWidget.setCellWidget(row, 3, self._criar_container_centralizado(btn_abrir))
+                self.tableWidget.setCellWidget(row, 4, self._criar_container_centralizado(btn_excluir))
+                
+                self.tableWidget.setRowHeight(row, 38)
+
+        except Exception as e:
+            print(f"Erro ao listar arquivos: {e}")
+
+    def _criar_container_centralizado(self, widget):
+        """Auxiliar para centralizar botões pequenos dentro da célula"""
+        container = QtWidgets.QWidget()
+        layout = QtWidgets.QHBoxLayout(container)
+        layout.addWidget(widget)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setAlignment(Qt.AlignCenter)
+        return container
+
+    def escolher_origem_e_anexar(self):
+        """Pergunta a origem antes de abrir o seletor de arquivos"""
+        opcoes = ["Clientes", "Funcionários", "Fiscais"]
+        origem, ok = QInputDialog.getItem(self, "Nova Anexação", "Escolha o destino do documento:", opcoes, 0, False)
+
+        if ok and origem:
+            files, _ = QFileDialog.getOpenFileNames(self, f"Selecionar Arquivos para {origem}")
+            if files:
+                try:
+                    for f in files:
+                        nome = os.path.basename(f)
+                        destino = os.path.join(self.pastas[origem], nome)
+                        shutil.copy2(f, destino)
+                    
+                    # Muda a aba automaticamente para mostrar onde o arquivo caiu
+                    self.sincronizar_aba_e_listar(origem)
+                    QMessageBox.information(self, "Sucesso", f"Arquivos salvos em {origem}!")
+                except Exception as e:
+                    QMessageBox.critical(self, "Erro", f"Falha no upload: {e}")
+
+    def sincronizar_aba_e_listar(self, origem):
+        """Marca o botão de filtro correto e atualiza a tabela"""
+        mapeamento = {
+            "Clientes": self.btn_filtro_cli,
+            "Funcionários": self.btn_filtro_fun,
+            "Fiscais": self.btn_filtro_fis
+        }
+        btn = mapeamento.get(origem)
+        if btn:
+            btn.setChecked(True)
+            self.mudar_aba_filtro(origem)
+
+    def deletar_arquivo(self, caminho):
+        confirmar = QMessageBox.question(self, "Confirmar", f"Excluir definitivamente?\n{os.path.basename(caminho)}", QMessageBox.Yes | QMessageBox.No)
+        if confirmar == QMessageBox.Yes:
+            os.remove(caminho)
+            self.listar_arquivos()
 
     def _connect_buttons(self):
         _connect_menu_buttons(self.ui, self.controller)
