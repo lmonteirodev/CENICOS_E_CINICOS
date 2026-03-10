@@ -56,9 +56,11 @@ def _connect_menu_buttons(ui, controller):
         "funcionarios": ["btn_abrir_funcionario_menu"],
         "documentos": ["btn_abrir_documento_menu", "btn_abrir_documentos"],
         "dashboard": ["btn_abrir_dashboard_menu"],
-        "cadastro_cliente": ["btn_abrir_novo_cliente_2","btn_cadastrar_cliente"]
-    }
-
+        "cadastro_cliente": ["btn_abrir_novo_cliente_2","btn_cadastrar_cliente"],
+        "financeiro": ["btn_abrir_documento_menu_2"],
+        "financeiro_table":["btn_abrir_documento_menu_2"]
+        }
+    
     for screen, names in mapping.items():
         for name in names:
             btn = ui.findChild(QtWidgets.QPushButton, name)
@@ -242,9 +244,6 @@ class ClienteScreen(QtWidgets.QWidget):
         header.setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-
-    def _connect_buttons(self):
-        _connect_menu_buttons(self.ui, self.controller)
 
     def _connect_buttons(self):
         _connect_menu_buttons(self.ui, self.controller)
@@ -868,21 +867,21 @@ class OrcamentoScreen(QtWidgets.QWidget):
     def __init__(self, controller):
         super().__init__()
         self.controller = controller
-        self.ui = uic.loadUi("telas/form_financeiro_cad.ui") # Nome do arquivo que você possui
+        self.ui = uic.loadUi("telas/form_financeiro_cad.ui")
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
 
         # Mapeamento de Widgets
-        self.input_item = self.ui.findChild(QtWidgets.QLineEdit, "lineEdit_item")
-        self.input_valor = self.ui.findChild(QtWidgets.QLineEdit, "lineEdit_valor")
-        self.input_cliente = self.ui.findChild(QtWidgets.QLineEdit, "lineEdit_cliente")
-        self.btn_adicionar = self.ui.findChild(QtWidgets.QPushButton, "btn_adicionar_item")
-        self.btn_salvar = self.ui.findChild(QtWidgets.QPushButton, "btn_salvar_orcamento")
-        self.list_resumo = self.ui.findChild(QtWidgets.QListWidget, "listWidget_resumo")
-        self.lbl_total = self.ui.findChild(QtWidgets.QLabel, "label_total")
+        self.input_item = self.ui.findChild(QtWidgets.QLineEdit, "lineEdit_1")
+        self.input_valor = self.ui.findChild(QtWidgets.QLineEdit, "lineEdit_3")
+        # self.input_cliente = self.ui.findChild(QtWidgets.QLineEdit, "lineEdit_cliente")
+        self.btn_adicionar = self.ui.findChild(QtWidgets.QPushButton, "pushButton_7")
+        self.btn_salvar = self.ui.findChild(QtWidgets.QPushButton, "pushButton_3")
+        self.list_resumo = self.ui.findChild(QtWidgets.QListWidget, "listWidget")
+        self.lbl_total = self.ui.findChild(QtWidgets.QLabel, "label_6")
 
-        self.itens_temporarios = [] # Lista de tuplas (descrição, valor)
+        self.itens_temporarios = []
         self.total_acumulado = 0.0
 
         # Conexões
@@ -891,7 +890,7 @@ class OrcamentoScreen(QtWidgets.QWidget):
         if self.btn_salvar:
             self.btn_salvar.clicked.connect(self.salvar_e_enviar_financeiro)
 
-        _connect_menu_buttons(self.ui, self.controller)
+        self._connect_buttons()
 
     def adicionar_item_lista(self):
         desc = self.input_item.text().strip()
@@ -939,19 +938,21 @@ class OrcamentoScreen(QtWidgets.QWidget):
         self.total_acumulado = 0.0
         self.lbl_total.setText("R$ 0.00")
         self.input_cliente.clear()
+    
+    def _connect_buttons(self):
+        _connect_menu_buttons(self.ui, self.controller)
 
 class FinanceiroScreen(QtWidgets.QWidget):
     def __init__(self, controller):
         super().__init__()
         self.controller = controller
-        self.ui = uic.loadUi("telas/form_financeiro.ui") # Nome fictício baseado na sua imagem
+        self.ui = uic.loadUi("telas/form_financeiro.ui")
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
 
-        self.tableWidget = self.ui.findChild(QtWidgets.QTableWidget, "tableWidget_historico")
+        self.tableWidget = self.ui.findChild(QtWidgets.QTableWidget, "tableWidget")
         self.configurar_tabela()
-        _connect_menu_buttons(self.ui, self.controller)
 
     def configurar_tabela(self):
         self.tableWidget.setColumnCount(4)
@@ -968,7 +969,6 @@ class FinanceiroScreen(QtWidgets.QWidget):
         self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(cliente))
         self.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem(f"R$ {total:.2f}"))
 
-        # Botão de Ação para PDF
         btn_pdf = QtWidgets.QPushButton("Gerar PDF")
         btn_pdf.setStyleSheet("background-color: #28a745; color: white; border-radius: 5px;")
         btn_pdf.clicked.connect(lambda: self.gerar_pdf_orcamento(cliente, total, itens))
@@ -1008,9 +1008,12 @@ class FinanceiroScreen(QtWidgets.QWidget):
         try:
             doc.build(elements)
             QMessageBox.information(self, "PDF", f"PDF gerado com sucesso: {nome_arquivo}")
-            os.startfile(nome_arquivo) # Abre o PDF automaticamente
+            os.startfile(nome_arquivo)
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao gerar PDF: {e}")
+
+    def _connect_buttons(self):
+        _connect_menu_buttons(self.ui, self.controller)
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -1029,6 +1032,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.adicionar_tela("agendamentos", AgendamentosScreen(self))
         self.adicionar_tela("cadastro_cliente", ClientesCadScreen(self))
         self.adicionar_tela("cadastro_funcionario", FuncCadScreen(self))
+        self.adicionar_tela("financeiro", OrcamentoScreen(self))
+        self.adicionar_tela("financeiro_table", FinanceiroScreen(self))
 
         self.show_screen("dashboard")
 

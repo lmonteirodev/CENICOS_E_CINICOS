@@ -701,9 +701,7 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="styleSheet">
     <string notr="true">background-color: rgb(255,255,255);
-border: 1px;
-box-shadow: 5px 5px 5px;
-border-color:  rgb(149, 149, 149);</string>
+border: none;</string>
    </property>
    <widget class="QPushButton" name="btn_abrir_dashboard_menu">
     <property name="geometry">
@@ -729,24 +727,22 @@ border-color:  rgb(149, 149, 149);</string>
      <enum>Qt::LeftToRight</enum>
     </property>
     <property name="styleSheet">
-     <string notr="true">
-QPushButton {
-	text-align: left;
-	padding: 20px;
-    min-height: 40px;
+     <string notr="true">QPushButton {
+    text-align: left;
+    padding-left: 20px;
+    min-height: 42px;
     background-color: white;
-    color:  rgb(139, 139, 139);
+    color: rgb(139,139,139);
     border-radius: 10px;
 }
 
 QPushButton:hover {
-    background-color: rgb(247, 247, 247);
-	color: rgb(139, 139, 139);
+    background-color: rgb(247,247,247);
 }
 
 QPushButton:pressed {
-    background-color: rgb(182, 75, 75);
-	color: white;
+    background-color: rgb(182,75,75);
+    color: white;
 }</string>
     </property>
     <property name="text">
@@ -769,7 +765,7 @@ QPushButton:pressed {
       <x>20</x>
       <y>300</y>
       <width>261</width>
-      <height>80</height>
+      <height>82</height>
      </rect>
     </property>
     <property name="font">
@@ -890,7 +886,8 @@ QPushButton:pressed {
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="styleSheet">
-     <string notr="true">QPushButton {
+     <string notr="true">
+QPushButton {
 	text-align: left;
 	padding: 20px;
     min-height: 42px;
@@ -986,10 +983,61 @@ QPushButton:pressed {
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="QPushButton" name="btn_abrir_documento_menu_2">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>700</y>
+      <width>261</width>
+      <height>82</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Segoe UI Semibold</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	text-align: left;
+	padding: 20px;
+    min-height: 40px;
+    background-color: white;
+    color:  rgb(139, 139, 139);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: rgb(247, 247, 247);
+	color: rgb(139, 139, 139);
+}
+
+QPushButton:pressed {
+    background-color: rgb(182, 75, 75);
+	color: white;
+}</string>
+    </property>
+    <property name="text">
+     <string>Financeiro</string>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>../Source/financeiro.svg</normaloff>../Source/financeiro.svg</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>50</width>
+      <height>50</height>
+     </size>
+    </property>
+   </widget>
   </widget>
-  <zorder>frame_3</zorder>
-  <zorder>menu_lateral</zorder>
-  <zorder>frame_2</zorder>
  </widget>
  <resources>
   <include location="recursos.qrc"/>

@@ -17,300 +17,6 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QFrame" name="menu_lateral">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>301</width>
-      <height>1081</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(255,255,255);
-border:none;</string>
-    </property>
-    <widget class="QPushButton" name="btn_abrir_dashboard_menu">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>200</y>
-       <width>261</width>
-       <height>82</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI Semibold</family>
-       <pointsize>12</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="cursor">
-      <cursorShape>PointingHandCursor</cursorShape>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton {
-	text-align: left;
-	padding: 20px;
-    min-height: 42px;
-    background-color: rgb(254, 242, 242);
-    color:  rgb(159, 7, 18);
-    border-radius: 10px;
-}
-</string>
-     </property>
-     <property name="text">
-      <string>Dashboard</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../Source/dashboard.svg</normaloff>../Source/dashboard.svg</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>50</width>
-       <height>50</height>
-      </size>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btn_abrir_cliente_menu">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>300</y>
-       <width>261</width>
-       <height>80</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI Semibold</family>
-       <pointsize>12</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="cursor">
-      <cursorShape>PointingHandCursor</cursorShape>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton {
-    text-align: left;
-    padding-left: 20px;
-    min-height: 42px;
-    background-color: white;
-    color: rgb(139,139,139);
-    border-radius: 10px;
-}
-
-QPushButton:hover {
-    background-color: rgb(247,247,247);
-}
-
-QPushButton:pressed {
-    background-color: rgb(182,75,75);
-    color: white;
-}</string>
-     </property>
-     <property name="text">
-      <string>Clientes</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../Source/clientes.svg</normaloff>../Source/clientes.svg</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>40</width>
-       <height>40</height>
-      </size>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btn_abrir_funcionario_menu">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>400</y>
-       <width>261</width>
-       <height>80</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI Semibold</family>
-       <pointsize>12</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="cursor">
-      <cursorShape>PointingHandCursor</cursorShape>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton {
-    text-align: left;
-    padding-left: 20px;
-    min-height: 42px;
-    background-color: white;
-    color: rgb(139,139,139);
-    border-radius: 10px;
-}
-
-QPushButton:hover {
-    background-color: rgb(247,247,247);
-}
-
-QPushButton:pressed {
-    background-color: rgb(182,75,75);
-    color: white;
-}</string>
-     </property>
-     <property name="text">
-      <string>Funcionários</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../Source/funcionarios.svg</normaloff>../Source/funcionarios.svg</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>40</width>
-       <height>40</height>
-      </size>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btn_abrir_agenda_menu">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>500</y>
-       <width>261</width>
-       <height>80</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI Semibold</family>
-       <pointsize>12</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="cursor">
-      <cursorShape>PointingHandCursor</cursorShape>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton {
-	text-align: left;
-	padding: 20px;
-    min-height: 40px;
-    background-color: white;
-    color:  rgb(139, 139, 139);
-    border-radius: 10px;
-}
-
-QPushButton:hover {
-    background-color: rgb(247, 247, 247);
-	color: rgb(139, 139, 139);
-}
-
-QPushButton:pressed {
-    background-color: rgb(182, 75, 75);
-	color: white;
-}</string>
-     </property>
-     <property name="text">
-      <string>Agenda</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../Source/agenda.svg</normaloff>../Source/agenda.svg</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>50</width>
-       <height>50</height>
-      </size>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btn_abrir_documento_menu">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>600</y>
-       <width>261</width>
-       <height>80</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI Semibold</family>
-       <pointsize>12</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="cursor">
-      <cursorShape>PointingHandCursor</cursorShape>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton {
-	text-align: left;
-	padding: 20px;
-    background-color: white;
-    color:  rgb(139, 139, 139);
-    border-radius: 10px;
-}
-
-QPushButton:hover {
-    background-color: rgb(247, 247, 247);
-	color: rgb(139, 139, 139);
-}
-
-QPushButton:pressed {
-    background-color: rgb(182, 75, 75);
-	color: white;
-}</string>
-     </property>
-     <property name="text">
-      <string>Documentos</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../Source/documentos.svg</normaloff>../Source/documentos.svg</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>50</width>
-       <height>50</height>
-      </size>
-     </property>
-    </widget>
-    <widget class="QLabel" name="logo">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>10</y>
-       <width>191</width>
-       <height>181</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string notr="true"/>
-     </property>
-     <property name="pixmap">
-      <pixmap>../Source/Cenicos.jpg</pixmap>
-     </property>
-     <property name="scaledContents">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </widget>
    <widget class="QFrame" name="main_frame">
     <property name="geometry">
      <rect>
@@ -936,9 +642,354 @@ p, li { white-space: pre-wrap; }
      </property>
     </widget>
    </widget>
-   <zorder>main_frame</zorder>
-   <zorder>menu_lateral</zorder>
-   <zorder>titulo_dashboard</zorder>
+   <widget class="QFrame" name="menu_lateral">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>301</width>
+      <height>1081</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255,255,255);
+border: none;</string>
+    </property>
+    <widget class="QPushButton" name="btn_abrir_dashboard_menu">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>200</y>
+       <width>261</width>
+       <height>82</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI Semibold</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">
+QPushButton {
+	text-align: left;
+	padding: 20px;
+    min-height: 42px;
+    background-color: rgb(254, 242, 242);
+    color:  rgb(159, 7, 18);
+    border-radius: 10px;
+}
+</string>
+     </property>
+     <property name="text">
+      <string>Dashboard</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../Source/dashboard.svg</normaloff>../Source/dashboard.svg</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>50</width>
+       <height>50</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_abrir_cliente_menu">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>300</y>
+       <width>261</width>
+       <height>82</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI Semibold</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    text-align: left;
+    padding-left: 20px;
+    min-height: 42px;
+    background-color: white;
+    color: rgb(139,139,139);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: rgb(247,247,247);
+}
+
+QPushButton:pressed {
+    background-color: rgb(182,75,75);
+    color: white;
+}</string>
+     </property>
+     <property name="text">
+      <string>Clientes</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../Source/clientes.svg</normaloff>../Source/clientes.svg</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>40</width>
+       <height>40</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_abrir_funcionario_menu">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>400</y>
+       <width>261</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI Semibold</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    text-align: left;
+    padding-left: 20px;
+    min-height: 42px;
+    background-color: white;
+    color: rgb(139,139,139);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: rgb(247,247,247);
+}
+
+QPushButton:pressed {
+    background-color: rgb(182,75,75);
+    color: white;
+}</string>
+     </property>
+     <property name="text">
+      <string>Funcionários</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../Source/funcionarios.svg</normaloff>../Source/funcionarios.svg</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>40</width>
+       <height>40</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_abrir_agenda_menu">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>500</y>
+       <width>261</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI Semibold</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	text-align: left;
+	padding: 20px;
+    min-height: 40px;
+    background-color: white;
+    color:  rgb(139, 139, 139);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: rgb(247, 247, 247);
+	color: rgb(139, 139, 139);
+}
+
+QPushButton:pressed {
+    background-color: rgb(182, 75, 75);
+	color: white;
+}</string>
+     </property>
+     <property name="text">
+      <string>Agenda</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../Source/agenda.svg</normaloff>../Source/agenda.svg</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>50</width>
+       <height>50</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_abrir_documento_menu">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>600</y>
+       <width>261</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI Semibold</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	text-align: left;
+	padding: 20px;
+    background-color: white;
+    color:  rgb(139, 139, 139);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: rgb(247, 247, 247);
+	color: rgb(139, 139, 139);
+}
+
+QPushButton:pressed {
+    background-color: rgb(182, 75, 75);
+	color: white;
+}</string>
+     </property>
+     <property name="text">
+      <string>Documentos</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../Source/documentos.svg</normaloff>../Source/documentos.svg</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>50</width>
+       <height>50</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QLabel" name="logo">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>10</y>
+       <width>191</width>
+       <height>181</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string notr="true"/>
+     </property>
+     <property name="pixmap">
+      <pixmap>../Source/Cenicos.jpg</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_abrir_documento_menu_2">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>700</y>
+       <width>261</width>
+       <height>82</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI Semibold</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    text-align: left;
+    padding-left: 20px;
+    min-height: 42px;
+    background-color: white;
+    color: rgb(139,139,139);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: rgb(247,247,247);
+}
+
+QPushButton:pressed {
+    background-color: rgb(182,75,75);
+    color: white;
+}</string>
+     </property>
+     <property name="text">
+      <string>Financeiro</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../Source/financeiro.svg</normaloff>../Source/financeiro.svg</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>50</width>
+       <height>50</height>
+      </size>
+     </property>
+    </widget>
+   </widget>
   </widget>
  </widget>
  <resources/>
