@@ -143,6 +143,11 @@ class ClienteScreen(QtWidgets.QWidget):
         self.btn_todos = self.ui.findChild(QtWidgets.QPushButton, "pushButton_7")
         self.btn_ativos = self.ui.findChild(QtWidgets.QPushButton, "pushButton_4")
         self.btn_inativos = self.ui.findChild(QtWidgets.QPushButton, "pushButton_8")
+        self.btn_novo = self.ui.findChild(QtWidgets.QPushButton, "pushButton_6")
+
+        if self.btn_novo:
+            self.btn_novo.clicked.connect (lambda: self.controller.show_screen("cadastro_cliente"))
+            self.btn_novo.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))            
 
         if self.tableWidget:
             self.configurar_tabela()
