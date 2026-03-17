@@ -16,7 +16,7 @@ from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 import datetime
-
+import re
 #================================= API =============================
 
 # Escopo para leitura e escrita no Drive
@@ -44,38 +44,25 @@ def obter_credenciais():
     return creds
 
 # ======================== FUNÇÃO MESTRA ============================
-def _connect_menu_buttons(ui, controller):
-    """Connect menu buttons from a loaded UI to controller.show_screen.
 
-    This tries several common object names found across the .ui files.
-    Prints which connections were made to help debugging.
-    """
-    mapping = {
-        "agenda": ["btn_abrir_agenda_menu", "btn_abrir_agenda", "btn_abrir_agenda_2", "btn_abrir_agenda_3"],
-        "clientes": ["btn_abrir_cliente_menu", "btn_abrir_clientes"],
-        "funcionarios": ["btn_abrir_funcionario_menu"],
-        "documentos": ["btn_abrir_documento_menu", "btn_abrir_documentos"],
-        "dashboard": ["btn_abrir_dashboard_menu"],
-        "cadastro_cliente": ["btn_abrir_novo_cliente_2","btn_cadastrar_cliente"],
-        "financeiro": ["btn_abrir_documento_menu_2"],
-        "financeiro_table":["btn_abrir_documento_menu_2"]
-        }
-    
-    for screen, names in mapping.items():
-        for name in names:
-            btn = ui.findChild(QtWidgets.QPushButton, name)
-            if btn:
-                try:
-                    def _on_click(_=None, s=screen, n=name):
-                        print(f"UI button clicked: {n} -> requesting '{s}'")
-                        controller.show_screen(s)
 
-                    btn.clicked.connect(_on_click)
-                    btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-                except Exception:
-                    # non-fatal; continue trying other buttons
-                    pass
-                print(f"connected UI button '{name}' -> '{screen}'")
+def _connect_menu_buttons(parent, controller):
+    for btn in parent.findChildren(QtWidgets.QPushButton):
+        tela = btn.property("tela")
+
+        if not tela:
+            nome = btn.objectName()
+            if nome.startswith("btn_abrir_"):
+                tela = nome.replace("btn_abrir_", "").replace("_menu", "")
+                tela = re.sub(r'_\d+$', '', tela)  # remove _2, _3...
+
+            if tela in ["cliente", "funcionario", "documento"]:
+                    tela += "s"
+
+
+        if tela:
+            print(f"{btn.objectName()} -> {tela}")
+            btn.clicked.connect(lambda _, t=tela: controller.show_screen(t))
 
 # ======================== CLASSES DE TELAS =========================
 class DashScreen(QtWidgets.QWidget):
@@ -251,7 +238,7 @@ class ClienteScreen(QtWidgets.QWidget):
         self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 
     def _connect_buttons(self):
-        _connect_menu_buttons(self.ui, self.controller)
+        _connect_menu_buttons(self, self.controller)
 
 class ClientesCadScreen(QtWidgets.QWidget):
     def __init__(self, controller):
@@ -876,11 +863,18 @@ class OrcamentoScreen(QtWidgets.QWidget):
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
+        
 
         # Mapeamento de Widgets
+        self.btn_ir_financeiro = self.ui.findChild(QtWidgets.QPushButton, "btn_financeiro_bk")
+
+        if self.btn_ir_financeiro:
+            self.btn_ir_financeiro.clicked.connect(
+        lambda: self.controller.show_screen("financeiro")
+    )
         self.input_item = self.ui.findChild(QtWidgets.QLineEdit, "lineEdit_1")
         self.input_valor = self.ui.findChild(QtWidgets.QLineEdit, "lineEdit_3")
-        # self.input_cliente = self.ui.findChild(QtWidgets.QLineEdit, "lineEdit_cliente")
+        self.input_cliente = self.ui.findChild(QtWidgets.QLineEdit, "lineEdit_cliente")
         self.btn_adicionar = self.ui.findChild(QtWidgets.QPushButton, "pushButton_7")
         self.btn_salvar = self.ui.findChild(QtWidgets.QPushButton, "pushButton_3")
         self.list_resumo = self.ui.findChild(QtWidgets.QListWidget, "listWidget")
@@ -945,7 +939,8 @@ class OrcamentoScreen(QtWidgets.QWidget):
         self.input_cliente.clear()
     
     def _connect_buttons(self):
-        _connect_menu_buttons(self.ui, self.controller)
+        _connect_menu_buttons(self, self.controller)
+
 
 class FinanceiroScreen(QtWidgets.QWidget):
     def __init__(self, controller):
@@ -955,6 +950,13 @@ class FinanceiroScreen(QtWidgets.QWidget):
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
+        
+        self.btn_abrir_orcamento = self.ui.findChild(QtWidgets.QPushButton, "btn_abrir_orcamento")
+
+        if self.btn_abrir_orcamento:
+            self.btn_abrir_orcamento.clicked.connect(
+        lambda: self.controller.show_screen("orcamento")
+        )
 
         self.tableWidget = self.ui.findChild(QtWidgets.QTableWidget, "tableWidget")
         self.configurar_tabela()
@@ -1018,7 +1020,7 @@ class FinanceiroScreen(QtWidgets.QWidget):
             QMessageBox.critical(self, "Erro", f"Erro ao gerar PDF: {e}")
 
     def _connect_buttons(self):
-        _connect_menu_buttons(self.ui, self.controller)
+        _connect_menu_buttons(self, self.controller)
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -1037,8 +1039,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.adicionar_tela("agendamentos", AgendamentosScreen(self))
         self.adicionar_tela("cadastro_cliente", ClientesCadScreen(self))
         self.adicionar_tela("cadastro_funcionario", FuncCadScreen(self))
-        self.adicionar_tela("financeiro", OrcamentoScreen(self))
-        self.adicionar_tela("financeiro_table", FinanceiroScreen(self))
+        self.adicionar_tela("orcamento", OrcamentoScreen(self))
+        self.adicionar_tela("financeiro", FinanceiroScreen(self))
 
         self.show_screen("dashboard")
 
@@ -1047,20 +1049,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.indices_telas[nome] = indice
 
     def show_screen(self, nome):
-        """Método que os botões do menu chamam via controller"""
+        nome = nome.strip().lower()  # 👈 resolve 90% dos bugs
         if nome in self.indices_telas:
             indice = self.indices_telas[nome]
             self.stack.setCurrentIndex(indice)
-
-            widget_atual = self.stack.currentWidget()
-            if nome == "clientes" and hasattr(widget_atual, "carregar_clientes"):
-                widget_atual.carregar_clientes()
-
-            if nome == "funcionarios" and hasattr(widget_atual, "carregar_func"):
-                widget_atual.carregar_func()
             print(f"Mudando para a tela: {nome}")
         else:
-            print(f"Erro: Tela '{nome}' não encontrada no mapeamento.")
+            print(f"❌ Tela '{nome}' não encontrada.")
 
 # ======================== TESTE DE TELAS ========================= 
 try:    
