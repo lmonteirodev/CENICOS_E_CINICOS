@@ -960,6 +960,7 @@ class FinanceiroScreen(QtWidgets.QWidget):
 
         self.tableWidget = self.ui.findChild(QtWidgets.QTableWidget, "tableWidget")
         self.configurar_tabela()
+        self._connect_buttons()
 
     def configurar_tabela(self):
         self.tableWidget.setColumnCount(4)
